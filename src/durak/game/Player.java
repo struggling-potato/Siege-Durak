@@ -5,6 +5,12 @@ public class Player implements IPlayer {
 	private int   id;
 	private Hand  hand = new Hand();
 
+	public void printHand() {
+		for (Card card : hand.getCards()) {
+			System.out.println("{" + card.getSuit() + ":" + card.getRank() + "}");
+		}
+	}
+
 	public Player(IGame game) {
 		this.game = game;
 		id        = game.registerPlayer(this);
@@ -16,7 +22,7 @@ public class Player implements IPlayer {
 
 	@Override
 	public void handOut(Hand hand) {
-
+		this.hand = hand;
 	}
 
 	@Override

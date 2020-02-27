@@ -1,8 +1,15 @@
 package durak.game;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class Hand {
-	private ArrayList<Card> cards = new ArrayList<Card>();
+	private ArrayList<Card> cards = new ArrayList<>();
+
+	public void addCard(Card card) {
+		cards.add(card);
+	}
+
+	public ArrayList<Card> getCards() {
+		return cards;
+	}
 }
