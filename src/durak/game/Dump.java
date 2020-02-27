@@ -1,5 +1,8 @@
-package game;
+package durak.game;
+
+
+import java.util.ArrayList;
 
 public class Dump {
-	private Pair[] cards;
+	private ArrayList<Pair> cards = new ArrayList<Pair>();
 }

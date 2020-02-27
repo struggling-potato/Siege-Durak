@@ -1,42 +1,62 @@
 package durak.game;
 
-import durak.Client;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Game implements IGame {
     private int currentId = 0;
 
-    private game.Table table;
+    private Table table;
 
-    private ArrayList<Player> players = new ArrayList<>(6);
+    private ArrayList<IPlayer> players = new ArrayList<>(6);
 
-    private HashMap<Integer, Player> map = new HashMap<>();
+    private HashMap<Integer, IPlayer> map = new HashMap<>();
 
-    public int addUser(IPlayer iPlayer) {
-        Player player1 = new Player(iPlayer, currentId);
-        players.add(player1);
-        map.put(currentId, player1);
-        int id = currentId++;
-        return id;
-    }
+    @Override
+    public void throwCard(int playerId, Card card) {
 
-    public static void main(String[] args) {
-        Game game = new Game();
-        Client client = new Client();
-        Client client1 = new Client();
-
-        client.register(game);
-        client1.register(game);
-        client.foo();
-        client1.foo();
     }
 
     @Override
-    public int ping(int id, int val) {
-        System.out.println(id);
-        System.out.println(val);
-        return val;
+    public void tossCard(int playerId, Card card) {
+
+    }
+
+    @Override
+    public void beatCard(int playerId, Pair pair) {
+
+    }
+
+    @Override
+    public void passTossing(int playerId) {
+
+    }
+
+    @Override
+    public void giveUpDefence(int playerId) {
+
+    }
+
+    @Override
+    public int registerPlayer(IPlayer player) {
+        int id = currentId;
+        players.add(player);
+        map.put(currentId++, player);
+        System.out.println("Player " + id + " registered");
+        return id;
+    }
+
+    @Override
+    public void exitGame(int playerId) {
+        if (map.containsKey(playerId)) {
+            IPlayer iPlayer = map.get(playerId);
+            players.remove(iPlayer);
+            map.remove(playerId);
+            System.out.println("Player " + playerId + " exited");
+        }
+        else {
+            System.out.println("Player " + playerId + " not found");
+        }
+
     }
 }

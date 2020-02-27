@@ -1,4 +1,4 @@
-package game;
+package durak.game;
 
 public class Card {
 	private Suit suit;

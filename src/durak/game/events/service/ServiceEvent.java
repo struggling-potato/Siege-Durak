@@ -1,6 +1,6 @@
-package game.events.service;
+package durak.game.events.service;
 
-import game.events.Event;
+import durak.game.events.Event;
 
 public interface ServiceEvent extends Event {
 	/*

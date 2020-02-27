@@ -1,4 +1,4 @@
-package game.graphics;
+package durak.game.graphics;
 
 import java.awt.*;
 

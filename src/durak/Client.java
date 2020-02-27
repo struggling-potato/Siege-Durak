@@ -1,25 +1,16 @@
 package durak;
 
 import durak.game.Game;
-import durak.game.IPlayer;
+import durak.game.Player;
 
-public class Client implements IPlayer {
+public class Client {
 
-    private Game game = null;
-    private int id = -1;
+    public static void main(String[] args) {
+        Game   game    = new Game();
+        Player player1 = new Player(game);
+        Player player2 = new Player(game);
 
-    public void register(Game game) {
-        this.game = game;
-
-        id = game.addUser(this);
-    }
-
-    @Override
-    public void foo() {
-        if (game != null) {
-            System.out.println(
-                    game.ping(id, 123)
-            );
-        }
+        game.exitGame(player1.getId());
+        game.exitGame(player2.getId());
     }
 }
