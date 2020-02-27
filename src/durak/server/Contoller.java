@@ -1,6 +1,6 @@
-package server;
+package durak.server;
 
-import game.Game;
+import durak.game.Game;
 
 public class Contoller {
 	private Game game;

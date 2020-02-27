@@ -1,6 +1,6 @@
-package communication;
+package durak.communication;
 
-import utils.Actor;
+import durak.utils.Actor;
 
 public class Connector {
 	public Actor connect(String ip, int port) {

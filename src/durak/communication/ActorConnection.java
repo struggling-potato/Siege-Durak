@@ -1,8 +1,8 @@
-package communication;
+package durak.communication;
 
-import utils.Actor;
-import utils.Message;
-import utils.ProcessMessage;
+import durak.utils.Actor;
+import durak.utils.Message;
+import durak.utils.ProcessMessage;
 
 public class ActorConnection implements Actor {
 	@Override

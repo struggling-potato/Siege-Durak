@@ -1,4 +1,4 @@
-package utils;
+package durak.utils;
 
 public interface Actor {
 	void processMessage(Message msg);

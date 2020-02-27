@@ -1,4 +1,4 @@
-package client.states;
+package durak.client.states;
 
 public interface State {
 

@@ -1,4 +1,4 @@
-package utils;
+package durak.utils;
 
 public class Message {
 
