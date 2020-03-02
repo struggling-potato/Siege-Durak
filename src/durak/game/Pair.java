@@ -1,7 +1,6 @@
 package durak.game;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
 
 public class Pair {
@@ -9,10 +8,9 @@ public class Pair {
 	private Optional<Card> top;
 
 	public ArrayList<Card> getCards() {
-		ArrayList<Card> pair= new ArrayList<Card>();
+		ArrayList<Card> pair = new ArrayList<>();
 		pair.add(bot);
-		if (top.isPresent())
-			pair.add(top.get());
+		top.ifPresent(pair::add);
 		return pair;
 	}
 }
