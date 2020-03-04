@@ -38,12 +38,12 @@ public class Game implements IGame {
     }
 
     @Override
-    public int registerPlayer(IPlayer player) {
+    public void registerPlayer(IPlayer player) {
         int id = currentId;
         players.add(player);
         map.put(currentId++, player);
         System.out.println("Player " + id + " registered");
-        return id;
+        player.onPlayerRegistered(id);
     }
 
     @Override

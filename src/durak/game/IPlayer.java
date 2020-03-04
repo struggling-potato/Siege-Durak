@@ -12,5 +12,7 @@ public interface IPlayer {
 
     void currentTable(Table table);
 
+    void onPlayerRegistered(int playerId);
+
     void endMove();
 }
