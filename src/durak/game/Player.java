@@ -13,7 +13,7 @@ public class Player implements IPlayer {
 
 	public Player(IGame game) {
 		this.game = game;
-		id        = game.registerPlayer(this);
+		game.registerPlayer(this);
 	}
 
 	public int getId() {
@@ -43,6 +43,11 @@ public class Player implements IPlayer {
 	@Override
 	public void currentTable(Table table) {
 
+	}
+
+	@Override
+	public void onPlayerRegistered(int playerId) {
+		id = playerId;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public interface IGame {
 
     void giveUpDefence(int playerId);
 
-    int registerPlayer(IPlayer player);
+    void registerPlayer(IPlayer player);
 
     void exitGame(int playerId);
 }
