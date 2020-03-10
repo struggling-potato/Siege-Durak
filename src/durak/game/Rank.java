@@ -10,5 +10,5 @@ public enum Rank {
 	RANK_J,
 	RANK_Q,
 	RANK_K,
-	RANK_A,
+	RANK_A
 }
