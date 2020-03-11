@@ -1,47 +1,52 @@
 package durak.game.graphics;
 
-import durak.client.IView;
-import durak.game.Hand;
-import durak.game.Player;
-import durak.game.Table;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+public class ClientView extends JFrame {
 
-public class ClientView implements IView {
+	ClassLoader classLoader = getClass().getClassLoader();
+	private JPanel tablePanel;
+	private JPanel deckPanel;
+	private Image tableImage;
 
-	private final static HashMap<Buttons, String> BUTTON_MAP = new HashMap<>();
-	static {
-		BUTTON_MAP.put(Buttons.BUTTON_START, "Начать игру");
-		BUTTON_MAP.put(Buttons.BUTTON_PASS, "Закончить ход");
-		BUTTON_MAP.put(Buttons.BUTTON_GIVEUP, "Взять карты");
-		BUTTON_MAP.put(Buttons.BUTTONS_EXITGAME, "Выйти из игры");
+	public ClientView(String windowName) {
+		super(windowName);
+		setBounds(150,150,1000,700);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		try {
+			tableImage = ImageIO.read(classLoader.getResourceAsStream("assets/table.jpg"));
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+		add(tablePanel);
+		setVisible(true);
 	}
 
-	@Override
-	public void drawTable(Table table) {
-	}
+	private void createUIComponents() {
+		tablePanel = new JPanel() {
 
-	@Override
-	public void drawStringState(String state) {
-	}
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
 
-	@Override
-	public void drawHandOut(Hand hand) {
-	}
+				g.drawImage(tableImage, 0, 0, tablePanel.getWidth(), tablePanel.getHeight(), null);
+			}
+		};
 
-	@Override
-	public void drawPlayers(ArrayList<Player> players) {
+		deckPanel = new JPanel() {
 
-	}
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
 
-	@Override
-	public void setButtonState(Buttons buttonId, boolean visible) {
-
-	}
-
-	@Override
-	public void setCardsState(boolean clicked) {
-
+				DeckView dv = new DeckView("clovers__Q", classLoader);
+				dv.draw(g);
+			}
+		};
 	}
 }
