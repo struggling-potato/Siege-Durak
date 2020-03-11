@@ -11,7 +11,11 @@ public class Player implements IPlayer {
 		}
 	}
 
-	public Player(IGame game) {
+	public Player() {
+
+	}
+
+	public void register(IGame game) {
 		this.game = game;
 		game.registerPlayer(this);
 	}
@@ -27,7 +31,7 @@ public class Player implements IPlayer {
 
 	@Override
 	public void makeMove() {
-
+		game.throwCard(id, hand.getCards().get(0));
 	}
 
 	@Override

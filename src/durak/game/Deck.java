@@ -1,67 +1,40 @@
 package durak.game;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Deck {
-	private Trump trump = new Trump();
-	private ArrayList<Card> cards = new ArrayList<Card>();
-	private ArrayList<Integer> keysOfCards = new ArrayList<Integer>();
-	private CardsDictionary cardsdictionary = new CardsDictionary();
-	private Integer currentCardIndex;
+	private Trump            trump = new Trump();
+	private ArrayDeque<Card> cards;
 
 	public Deck() {
-		currentCardIndex = 1;
+		ArrayList<Card> cards = new ArrayList<>(36);
+		for (var suit : Suit.values()) {
+			if (suit.equals(Suit.SUIT_INVALID))
+				continue;
+			for (var rank : Rank.values()) {
+				if (rank.equals(Rank.RANK_INVALID))
+					continue;
+				cards.add(new Card(suit, rank));
+			}
+		}
+
+		Collections.shuffle(cards);
+		this.cards = new ArrayDeque<>(cards);
+		trump.setSuit(this.cards.getLast().getSuit());
 	}
 
-	public ArrayList<Card> getCardsFromDeck() {
-		return this.cards;
+	public ArrayDeque<Card> getCardsFromDeck() {
+		return cards;
 	}
 
 	public Card getCurrentCardFromDeck() {
-		Card currentCard = cards.get(currentCardIndex);
-		currentCardIndex++;
-		return currentCard;
-	};
-
-	public void setCardsToDeck(ArrayList<Card> cards) {
-		this.cards = cards;
+		return cards.removeLast();
 	}
 
 	public Trump getTrump() {
 		return this.trump;
 	}
 
-	public void setTrump(Trump trump) {
-		this.trump = trump;
-	}
-
-	public void generateDeck() {
-		HashMap<Integer, Card> dictionary = cardsdictionary.createDictionary();
-		for (int i=1; i <= 36; i++){
-			keysOfCards.add(i);
-		}
-		Collections.shuffle(keysOfCards);
-		for (int i=0; i < keysOfCards.size(); i++) {
-			cards.add(dictionary.get(keysOfCards.get(i)));
-		}
-		int keyOfTrump = 1 + (int) (Math.random() * 4);
-		switch (keyOfTrump) {
-			case 1: {
-				trump.setSuit(Suit.SUIT_HEARTS);
-				break;
-			}
-			case 2: {
-				trump.setSuit(Suit.SUIT_PIKES);
-				break;
-			}
-			case 3: {
-				trump.setSuit(Suit.SUIT_CLOVERS);
-				break;
-			}
-			case 4: {
-				trump.setSuit(Suit.SUIT_TILES);
-				break;
-			}
-		}
-	}
 }

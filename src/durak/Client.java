@@ -6,8 +6,11 @@ public class Client {
 
     public static void main(String[] args) {
         Game   game    = new Game();
-        Player player1 = new Player(game);
-        Player player2 = new Player(game);
+        Player player1 = new Player();
+        Player player2 = new Player();
+
+        player1.register(game);
+        player2.register(game);
 
         Hand hand1 = new Hand();
         Hand hand2 = new Hand();
