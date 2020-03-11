@@ -2,17 +2,22 @@ package durak.game;
 
 public interface IGame {
 
-    void throwCard(int playerId, Card card);
+    void throwCard(int playerId, Card card); //походить
 
-    void tossCard(int playerId, Card card);
+    void tossCard(int playerId, Card card); //подбросить
 
-    void beatCard(int playerId, Pair pair);
+    void beatCard(int playerId, Pair pair); //отбить
 
-    void passTossing(int playerId);
+    void passTossing(int playerId); //хватит
 
-    void giveUpDefence(int playerId);
+    void giveUpDefence(int playerId); //взять
 
     void registerPlayer(IPlayer player);
 
     void exitGame(int playerId);
+
+    void startGame(int playerId); //начать игру
+
+
+
 }
