@@ -164,7 +164,7 @@ public class Game implements IGame, ServerGame {
 			System.out.println("Player " + playerId + " not found");
 		}
 
-	}
+    }
 
 	@Override
 	public void startGame(int playerId) {
