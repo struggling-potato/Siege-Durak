@@ -43,7 +43,7 @@ public class Player implements IPlayer, Serializable {
 
 	@Override
 	public void makeMove() {
-
+		game.throwCard(id, hand.getCards().get(0));
 	}
 
 	@Override
