@@ -7,6 +7,7 @@ public class Client {
 
     public static void main(String[] args) {
         ClientView clientView = new ClientView("Siege-Durak");
+        clientView.setTrump(new Card(Suit.SUIT_HEARTS, Rank.RANK_6));
 //        Game   game    = new Game();
 //        Player player1 = new Player(game);
 //        Player player2 = new Player(game);

@@ -1,5 +1,7 @@
 package durak.game.graphics;
 
+import durak.game.Card;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +13,7 @@ public class ClientView extends JFrame {
 	private JPanel tablePanel;
 	private JPanel deckPanel;
 	private Image tableImage;
+	private DeckView deckView = new DeckView();
 
 	public ClientView(String windowName) {
 		super(windowName);
@@ -23,8 +26,13 @@ public class ClientView extends JFrame {
 			ex.printStackTrace();
 		}
 
+		deckPanel.setOpaque(false);
 		add(tablePanel);
 		setVisible(true);
+	}
+
+	public void setTrump(Card card) {
+		deckView.setTrump(card, classLoader);
 	}
 
 	private void createUIComponents() {
@@ -44,8 +52,9 @@ public class ClientView extends JFrame {
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
 
-				DeckView dv = new DeckView("clovers__Q", classLoader);
-				dv.draw(g);
+				if (deckView.isTrumpSet()) {
+					deckView.draw(g);
+				}
 			}
 		};
 	}
