@@ -54,4 +54,14 @@ public class Player implements IPlayer {
 	public void endMove() {
 
 	}
+
+	@Override
+	public void onGameStarted() {
+
+	}
+
+	@Override
+	public void onGameFinished() {
+
+	}
 }
