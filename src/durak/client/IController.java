@@ -2,9 +2,9 @@ package durak.client;
 
 public interface IController {
 
-	void buttonPressed(int buttonId);
+	void onButtonPressed(int buttonId);
 
-	void clickTable(int pairIdx, boolean mode);
+	void onClickTable(int pairIdx, boolean mode);
 
-	void clickCard(int pairIdx, boolean mode);
+	void onClickCard(int pairIdx, boolean mode);
 }

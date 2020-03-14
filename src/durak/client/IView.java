@@ -10,7 +10,7 @@ public interface IView {
 
 	void drawTable(Table table); //стол
 
-	void drawStringState(String State); //строка состояния
+	void drawStringState(String state); //строка состояния
 
 	void drawHandOut(Hand hand); //твои карты
 
