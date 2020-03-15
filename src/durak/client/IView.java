@@ -17,6 +17,4 @@ public interface IView {
 	void drawPlayers(ArrayList<Player> players); //противники
 
 	void setButtonState(int buttonId, String title, boolean visible);
-
-	void connect(IController controller);
 }
