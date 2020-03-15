@@ -1,6 +1,7 @@
 package durak.game.graphics;
 
 import durak.game.Card;
+import durak.game.Hand;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,10 +15,11 @@ public class ClientView extends JFrame {
 	private JPanel deckPanel;
 	private Image tableImage;
 	private DeckView deckView = new DeckView();
+	private HandView handView = new HandView();
 
 	public ClientView(String windowName) {
 		super(windowName);
-		setBounds(150,150,1000,700);
+		setBounds(150,150,1100,800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		try {
@@ -32,7 +34,16 @@ public class ClientView extends JFrame {
 	}
 
 	public void setTrump(Card card) {
+		System.out.println("clientView.setTrump called");
 		deckView.setTrump(card, classLoader);
+		repaint();
+	}
+
+	public void drawPlayerHand(Hand hand, int pos) {
+		handView.setHand(hand);
+		handView.setPosition(pos);
+
+
 	}
 
 	private void createUIComponents() {
@@ -52,6 +63,7 @@ public class ClientView extends JFrame {
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
 
+				System.out.println("deckView.isTrumpSet: " + deckView.isTrumpSet());
 				if (deckView.isTrumpSet()) {
 					deckView.draw(g);
 				}
