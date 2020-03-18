@@ -105,7 +105,7 @@ public class Game implements IGame, ServerGame {
 			Hand hand = new Hand();
 
 			for (int i = 0; i < 6; i++) {
-				hand.addCard(deck.getCurrentCardFromDeck());
+				hand.addCard(deck.takeCardFromDeck());
 			}
 
 			int playerId = reverseMap.get(players.get(curMoveIdx));

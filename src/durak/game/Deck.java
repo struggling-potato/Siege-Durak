@@ -25,11 +25,11 @@ public class Deck {
 		trump.setSuit(this.cards.getLast().getSuit());
 	}
 
-	public ArrayDeque<Card> getCardsFromDeck() {
+	public ArrayDeque<Card> getCards() {
 		return cards;
 	}
 
-	public Card getCurrentCardFromDeck() {
+	public Card takeCardFromDeck() {
 		return cards.removeLast();
 	}
 
