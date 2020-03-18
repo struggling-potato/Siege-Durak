@@ -1,6 +1,8 @@
 package durak.game;
 
-public class Player implements IPlayer {
+import java.io.Serializable;
+
+public class Player implements IPlayer, Serializable {
 	private IGame game;
 	private int   id;
 	private Hand  hand = new Hand();
@@ -26,6 +28,7 @@ public class Player implements IPlayer {
 
 	@Override
 	public void handOut(Hand hand) {
+		System.out.println("handOut " + hand);
 		this.hand = hand;
 	}
 
@@ -51,6 +54,7 @@ public class Player implements IPlayer {
 
 	@Override
 	public void onPlayerRegistered(int playerId) {
+		System.out.println("onPlayerRegistered playerId: " + playerId);
 		id = playerId;
 	}
 

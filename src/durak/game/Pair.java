@@ -1,25 +1,26 @@
 package durak.game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Optional;
 
-public class Pair {
-	private Card           bot;
-	private Optional<Card> top;
+public class Pair implements Serializable {
+	private Card bot;
+	private Card top;
+
+	public Pair(Card bot, Card top) {
+		this.bot = bot;
+		this.top = top;
+	}
 
 	public Pair(Card card) {
 		bot = card;
 	}
 
-	public Pair(Card bot, Card top) {
-		this.bot = bot;
-		this.top = Optional.of(top);
-	}
-
 	public ArrayList<Card> getCards() {
 		ArrayList<Card> pair = new ArrayList<>();
 		pair.add(bot);
-		top.ifPresent(pair::add);
+		if (null != top)
+			pair.add(top);
 		return pair;
 	}
 }

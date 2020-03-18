@@ -1,10 +1,11 @@
 package durak.game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Hand {
+public class Hand implements Serializable {
 	private ArrayList<Card> cards = new ArrayList<>();
 
 	public void addCard(Card card) {
@@ -17,5 +18,12 @@ public class Hand {
 
 	public ArrayList<Card> filter(Predicate<Card> predicate) {
 		return cards.stream().filter(predicate).collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	@Override
+	public String toString() {
+		return "Hand{" +
+		       "cards=" + cards +
+		       '}';
 	}
 }

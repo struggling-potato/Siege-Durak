@@ -1,6 +1,8 @@
 package durak.game;
 
-public class Trump {
+import java.io.Serializable;
+
+public class Trump implements Serializable {
 	private Suit suit;
 
 	public Suit getSuit() {

@@ -1,6 +1,8 @@
 package durak.game;
 
-public class Card implements Comparable {
+import java.io.Serializable;
+
+public class Card implements Comparable, Serializable {
 	private Suit suit;
 	private Rank rank;
 	private int  ownerId;
@@ -8,6 +10,11 @@ public class Card implements Comparable {
 	public Card(Suit suit, Rank rank) {
 		this.suit = suit;
 		this.rank = rank;
+	}
+
+	public Card(Card card) {
+		this.suit = card.suit;
+		this.rank = card.rank;
 	}
 
 	public Suit getSuit() {
