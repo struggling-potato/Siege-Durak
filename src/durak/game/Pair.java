@@ -16,6 +16,10 @@ public class Pair implements Serializable {
 		bot = card;
 	}
 
+	public Pair(Card card) {
+		bot = card;
+	}
+
 	public ArrayList<Card> getCards() {
 		ArrayList<Card> pair = new ArrayList<>();
 		pair.add(bot);
