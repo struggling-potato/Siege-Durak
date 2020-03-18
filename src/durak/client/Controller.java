@@ -1,9 +1,9 @@
 package durak.client;
 
-import durak.client.states.State;
 import durak.game.Game;
+import durak.game.PlayerState;
 
 public class Controller {
-	private State currentState;
-	private Game game;
+	private PlayerState currentPlayerState;
+	private Game        game;
 }

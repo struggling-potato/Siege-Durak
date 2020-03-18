@@ -11,7 +11,11 @@ public class Player implements IPlayer {
 		}
 	}
 
-	public Player(IGame game) {
+	public Player() {
+
+	}
+
+	public void register(IGame game) {
 		this.game = game;
 		game.registerPlayer(this);
 	}

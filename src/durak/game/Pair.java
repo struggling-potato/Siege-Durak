@@ -7,6 +7,10 @@ public class Pair {
 	private Card           bot;
 	private Optional<Card> top;
 
+	public Pair(Card card) {
+		bot = card;
+	}
+
 	public Pair(Card bot, Card top) {
 		this.bot = bot;
 		this.top = Optional.of(top);
