@@ -24,4 +24,3 @@ public class Pair implements Serializable {
 		return pair;
 	}
 }
-

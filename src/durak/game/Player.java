@@ -62,4 +62,14 @@ public class Player implements IPlayer, Serializable {
 	public void endMove() {
 
 	}
+
+	@Override
+	public void onGameStarted() {
+
+	}
+
+	@Override
+	public void onGameFinished() {
+
+	}
 }
