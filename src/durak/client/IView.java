@@ -14,7 +14,7 @@ public interface IView {
 
 	void drawHandOut(Hand hand); //твои карты
 
-	void drawPlayers(ArrayList<Player> players); //противники
+	void drawPlayers(ArrayList<IPlayer> opponents); //противники
 
 	void setButtonState(int buttonId, String title, boolean visible);
 }
