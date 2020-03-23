@@ -1,10 +1,11 @@
 package durak.game;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Deck {
+public class Deck implements Serializable {
 	private Trump            trump = new Trump();
 	private ArrayDeque<Card> cards;
 
@@ -37,4 +38,11 @@ public class Deck {
 		return this.trump;
 	}
 
+	@Override
+	public String toString() {
+		return "Deck{" +
+		       "trump=" + trump +
+		       ", cards=" + cards +
+		       '}';
+	}
 }
