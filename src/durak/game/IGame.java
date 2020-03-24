@@ -8,7 +8,7 @@ public interface IGame {
 
 	void beatCard(int playerId, Pair pair); //отбить
 
-	void passTossing(int playerId); //хватит
+    void passTossing(int playerId); //хватит
 
 	void giveUpDefence(int playerId); //взять
 

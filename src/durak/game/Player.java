@@ -18,6 +18,10 @@ public class Player implements IPlayer, Serializable {
 
 	}
 
+	public Card getCard(int index){
+		return hand.getCards().get(index);
+	}
+
 	public void register(IGame game) {
 		this.game = game;
 		game.registerPlayer(this);
