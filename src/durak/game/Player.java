@@ -1,11 +1,20 @@
 package durak.game;
 
+import durak.client.Controller;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Player implements IPlayer, Serializable {
 	private IGame game;
 	private int   id;
-	private Hand  hand = new Hand();
+
+	public void setHand(Hand hand) {
+		this.hand = hand;
+	}
+
+	private Hand       hand;
+	private Controller controller;
 
 	public void printHand() {
 		for (Card card : hand.getCards()) {
@@ -13,8 +22,9 @@ public class Player implements IPlayer, Serializable {
 		}
 	}
 
-	public Player() {
-
+	public Player(Controller controller) {
+		hand = new Hand();
+		this.controller = controller;
 	}
 
 	public void register(IGame game) {
@@ -28,8 +38,6 @@ public class Player implements IPlayer, Serializable {
 
 	@Override
 	public void handOut(Hand hand) {
-		System.out.println("handOut " + hand);
-		this.hand = hand;
 	}
 
 	@Override
@@ -70,6 +78,11 @@ public class Player implements IPlayer, Serializable {
 
 	@Override
 	public void onGameFinished() {
+
+	}
+
+	@Override
+	public void opponentsList(ArrayList<Player> opponents) {
 
 	}
 }

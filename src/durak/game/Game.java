@@ -12,6 +12,10 @@ public class Game implements IGame {
 
     private HashMap<Integer, IPlayer> map = new HashMap<>();
 
+    public HashMap<Integer, IPlayer> getMap() {
+        return map;
+    }
+
     @Override
     public void throwCard(int playerId, Card card) {
 
@@ -64,4 +68,11 @@ public class Game implements IGame {
     public void startGame(int playerId) {
 
     }
+
+    @Override
+    public void getOpponentsList(int playerId) {
+
+    }
+
+
 }

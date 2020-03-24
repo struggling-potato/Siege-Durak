@@ -1,5 +1,7 @@
 package durak.game;
 
+import java.util.ArrayList;
+
 public interface IPlayer {
 
     void handOut(Hand hand); //твои карты
@@ -20,5 +22,6 @@ public interface IPlayer {
 
     void onGameFinished(); //игра окончена
 
+    void opponentsList(ArrayList<Player> opponents); //список проивников
 
 }
