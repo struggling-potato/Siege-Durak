@@ -20,17 +20,14 @@ public class ClientView implements IView {
 
 	@Override
 	public void drawTable(Table table) {
-
 	}
 
 	@Override
 	public void drawStringState(String state) {
-
 	}
 
 	@Override
 	public void drawHandOut(Hand hand) {
-
 	}
 
 	@Override

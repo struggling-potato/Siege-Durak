@@ -5,22 +5,18 @@ import durak.game.graphics.Buttons;
 import durak.game.graphics.ClientView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Controller implements IPlayer, IController {
 
-	private final Player            player;
-	private final ClientView        view;
+	private final Player            player    = new Player();
+	private final ClientView        view      = new ClientView();
+	private       ArrayList<Player> opponents = new ArrayList<>();
 	private       Game              game;
 	private       PlayerState       currentPlayerState;
 	private       Table             table;
-	private       ArrayList<Player> opponents;
 
 	private Controller(Game game) {
-		player = new Player();
 		this.game = game;
-		view = new ClientView();
-		opponents = new ArrayList<>();
 		currentPlayerState = PlayerState.STATE_INVALID;
 	}
 
@@ -66,7 +62,7 @@ public class Controller implements IPlayer, IController {
 
 	@Override
 	public void endMove() {
-		currentPlayerState=PlayerState.STATE_WAIT;
+		currentPlayerState = PlayerState.STATE_WAIT;
 		view.setCardsState(false);
 		view.drawStringState("Ожидание хода");
 
@@ -79,15 +75,28 @@ public class Controller implements IPlayer, IController {
 	}
 
 	@Override
-	public void onGameFinished() {
-		currentPlayerState=PlayerState.STATE_INVALID;
-		view.drawStringState("Вы вышли из игры");
+	public void onGameFinished(int loserId) {
+		if (loserId == -1) {
+			view.drawStringState("Игра окончена. Ничья!");
+		}
+		if (player.getId() == loserId) {
+			view.drawStringState("Игра окончена. Вы проиграли!");
+		}
+		else {
+			view.drawStringState("Игра окончена. Вы победили!");
+		}
 	}
 
 	@Override
 	public void currentOpponentsList(ArrayList<Player> opponents) {
 		this.opponents = opponents;
 		view.drawPlayers(opponents);
+	}
+
+	@Override
+	public void onPlayerDisconnected() {
+		currentPlayerState = PlayerState.STATE_INVALID;
+		view.drawStringState("Вы вышли из игры");
 	}
 
 	@Override
@@ -126,7 +135,7 @@ public class Controller implements IPlayer, IController {
 			chosenCard = new Card(player.getCard(cardIdx));
 			view.setCardsState(false);
 		}
-		if(currentPlayerState==PlayerState.STATE_TOSS){
+		if (currentPlayerState == PlayerState.STATE_TOSS) {
 			game.tossCard(player.getId(), player.getCard(cardIdx));
 			view.drawStringState("Ожидание противника");
 		}

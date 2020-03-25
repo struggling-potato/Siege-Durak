@@ -25,13 +25,18 @@ public class Pair implements Serializable {
 	}
 
 	public boolean isOpen() {
-		if (top == null) {
-			return true;
-		}
-		return false;
+		return top == null;
 	}
 
 	public Card getBottomCard() {
 		return bot;
+	}
+
+	@Override
+	public String toString() {
+		return "Pair{" +
+		       "bot=" + bot +
+		       ", top=" + top +
+		       '}';
 	}
 }

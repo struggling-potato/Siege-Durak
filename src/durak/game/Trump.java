@@ -12,4 +12,11 @@ public class Trump implements Serializable {
 	public void setSuit(Suit suit) {
 		this.suit = suit;
 	}
+
+	@Override
+	public String toString() {
+		return "Trump{" +
+		       "suit=" + suit +
+		       '}';
+	}
 }

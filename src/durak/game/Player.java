@@ -74,12 +74,17 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	@Override
-	public void onGameFinished() {
+	public void onGameFinished(int loserId) {
 
 	}
 
 	@Override
 	public void currentOpponentsList(ArrayList<Player> opponents) {
+
+	}
+
+	@Override
+	public void onPlayerDisconnected() {
 
 	}
 }
