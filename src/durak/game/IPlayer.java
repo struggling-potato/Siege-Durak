@@ -20,5 +20,5 @@ public interface IPlayer {
 
     void onGameFinished(); //игра окончена
 
-
+    void onPlayerDisconnected();
 }

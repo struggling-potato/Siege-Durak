@@ -23,4 +23,12 @@ public class Pair implements Serializable {
 			pair.add(top);
 		return pair;
 	}
+
+	@Override
+	public String toString() {
+		return "Pair{" +
+		       "bot=" + bot +
+		       ", top=" + top +
+		       '}';
+	}
 }

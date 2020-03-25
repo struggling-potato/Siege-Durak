@@ -72,4 +72,9 @@ public class Player implements IPlayer, Serializable {
 	public void onGameFinished() {
 
 	}
+
+	@Override
+	public void onPlayerDisconnected() {
+
+	}
 }
