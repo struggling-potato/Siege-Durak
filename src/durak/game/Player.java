@@ -58,7 +58,7 @@ public class Player implements IPlayer, Serializable {
 
 	@Override
 	public void currentTable(Table table) {
-
+		System.out.println(id + " currentTable " + table);
 	}
 
 	@Override
