@@ -79,7 +79,7 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	@Override
-	public void opponentsList(ArrayList<Player> opponents) {
+	public void currentOpponentsList(ArrayList<Player> opponents) {
 
 	}
 }

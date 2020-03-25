@@ -64,9 +64,4 @@ public class Game implements IGame {
     public void startGame(int playerId) {
 
     }
-
-    @Override
-    public void getOpponentsList(int playerId) {
-
-    }
 }

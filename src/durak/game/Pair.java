@@ -23,4 +23,15 @@ public class Pair implements Serializable {
 			pair.add(top);
 		return pair;
 	}
+
+	public boolean isOpen() {
+		if (top == null) {
+			return true;
+		}
+		return false;
+	}
+
+	public Card getBottomCard() {
+		return bot;
+	}
 }

@@ -3,6 +3,7 @@ package durak.client;
 import durak.game.Hand;
 import durak.game.Player;
 import durak.game.Table;
+import durak.game.graphics.Buttons;
 
 import java.util.ArrayList;
 
@@ -16,7 +17,7 @@ public interface IView {
 
 	void drawPlayers(ArrayList<Player> players); //противники
 
-	void setButtonState(int buttonId, String title, boolean visible);
+	void setButtonState(Buttons buttonId, boolean visible);
 
 	void setCardsState(boolean clickable);
 }

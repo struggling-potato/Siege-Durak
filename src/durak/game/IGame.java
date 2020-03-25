@@ -18,6 +18,4 @@ public interface IGame {
 
 	void startGame(int playerId); //начать игру
 
-	void getOpponentsList(int playerId); //получить список противников
-
 }

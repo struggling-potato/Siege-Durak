@@ -22,6 +22,6 @@ public interface IPlayer {
 
     void onGameFinished(); //игра окончена
 
-    void opponentsList(ArrayList<Player> opponents); //список проивников
+    void currentOpponentsList(ArrayList<Player> opponents); //список проивников
 
 }

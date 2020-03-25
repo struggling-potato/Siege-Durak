@@ -1,8 +1,10 @@
 package durak.client;
 
+import durak.game.graphics.Buttons;
+
 public interface IController {
 
-	void onButtonPressed(int buttonId);
+	void onButtonPressed(Buttons buttonIdx);
 	
 	void onCardClicked(int cardIdx);
 

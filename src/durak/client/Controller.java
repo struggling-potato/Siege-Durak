@@ -1,6 +1,7 @@
 package durak.client;
 
 import durak.game.*;
+import durak.game.graphics.Buttons;
 import durak.game.graphics.ClientView;
 
 import java.util.ArrayList;
@@ -8,27 +9,18 @@ import java.util.HashMap;
 
 public class Controller implements IPlayer, IController {
 
-	private final Player      player;
-	private final ClientView  view;
-	private       Game        game;
-	private       PlayerState currentPlayerState;
-	private       Table       table;
-
-	private final static HashMap<Integer, String> BUTTON_MAP = new HashMap<>() {
-		{
-			BUTTON_MAP.put(0, "Начать игру");
-
-			//TODO: Виталий, поменяй название)))
-			BUTTON_MAP.put(1, "Хватит");
-
-
-		}
-	};
+	private final Player            player;
+	private final ClientView        view;
+	private       Game              game;
+	private       PlayerState       currentPlayerState;
+	private       Table             table;
+	private       ArrayList<Player> opponents;
 
 	private Controller(Game game) {
 		player = new Player();
 		this.game = game;
 		view = new ClientView();
+		opponents = new ArrayList<>();
 		currentPlayerState = PlayerState.STATE_INVALID;
 	}
 
@@ -43,7 +35,7 @@ public class Controller implements IPlayer, IController {
 		currentPlayerState = PlayerState.STATE_MOVE;
 		view.drawStringState("Ваш ход");
 		view.setCardsState(true);
-		view.setButtonState(1, BUTTON_MAP.get(1), true);
+		view.setButtonState(Buttons.BUTTON_PASS, true);
 	}
 
 	@Override
@@ -51,28 +43,32 @@ public class Controller implements IPlayer, IController {
 		currentPlayerState = PlayerState.STATE_DEFEND;
 		view.drawStringState("Отбивайтесь");
 		view.setCardsState(true);
-
 	}
 
 	@Override
 	public void tossCards() {
+		currentPlayerState = PlayerState.STATE_TOSS;
+		view.drawStringState("Подкидывайте");
+		view.setCardsState(true);
 	}
 
 	@Override
 	public void currentTable(Table table) {
 		this.table = table;
 		view.drawTable(table);
-		game.getOpponentsList(player.getId());
 	}
 
 	@Override
 	public void onPlayerRegistered(int playerId) {
 		player.onPlayerRegistered(playerId);
-		view.setButtonState(0, BUTTON_MAP.get(0), true);
+		view.setButtonState(Buttons.BUTTON_START, true);
 	}
 
 	@Override
 	public void endMove() {
+		currentPlayerState=PlayerState.STATE_WAIT;
+		view.setCardsState(false);
+		view.drawStringState("Ожидание хода");
 
 	}
 
@@ -84,26 +80,37 @@ public class Controller implements IPlayer, IController {
 
 	@Override
 	public void onGameFinished() {
-
+		currentPlayerState=PlayerState.STATE_INVALID;
+		view.drawStringState("Вы вышли из игры");
 	}
 
 	@Override
-	public void opponentsList(ArrayList<Player> opponents) {
+	public void currentOpponentsList(ArrayList<Player> opponents) {
+		this.opponents = opponents;
 		view.drawPlayers(opponents);
 	}
 
 	@Override
-	public void onButtonPressed(int buttonId) {
+	public void onButtonPressed(Buttons buttonId) {
 		switch (buttonId) {
-			case 0:
-				view.setButtonState(0, BUTTON_MAP.get(0), false);
+			case BUTTON_START:
+				view.setButtonState(Buttons.BUTTON_START, false);
 				view.drawStringState("Ожидание противников");
 				game.startGame(player.getId());
 				break;
-			case 1:
-				view.setButtonState(1, BUTTON_MAP.get(1), false);
+			case BUTTON_PASS:
+				view.setButtonState(Buttons.BUTTON_PASS, false);
 				game.passTossing(player.getId());
 				view.setCardsState(false);
+				break;
+			case BUTTON_GIVEUP:
+				view.setButtonState(Buttons.BUTTON_GIVEUP, false);
+				game.giveUpDefence(player.getId());
+				view.setCardsState(false);
+				break;
+			case BUTTONS_EXITGAME:
+				view.setButtonState(Buttons.BUTTONS_EXITGAME, false);
+				game.exitGame(player.getId());
 		}
 	}
 
@@ -115,19 +122,21 @@ public class Controller implements IPlayer, IController {
 			game.throwCard(player.getId(), player.getCard(cardIdx));
 			view.drawStringState("Ожидание противника");
 		}
-		if (currentPlayerState == PlayerState.STATE_TOSS) {
+		if (currentPlayerState == PlayerState.STATE_DEFEND) {
 			chosenCard = new Card(player.getCard(cardIdx));
 			view.setCardsState(false);
+		}
+		if(currentPlayerState==PlayerState.STATE_TOSS){
+			game.tossCard(player.getId(), player.getCard(cardIdx));
+			view.drawStringState("Ожидание противника");
 		}
 	}
 
 	@Override
 	public void onTableClicked(int pairIdx) {
-		Pair chosenPair= table.getThrownCard().get(pairIdx);
-		if (chosenPair.getCards().size() == 1) {
-			chosenPair.getCards().add(chosenCard);
-			game.beatCard(player.getId(),chosenPair);
+		Pair chosenPair = table.getThrownCard().get(pairIdx);
+		if (chosenPair.isOpen()) {
+			game.beatCard(player.getId(), new Pair(chosenPair.getBottomCard(), chosenCard));
 		}
-
 	}
 }
