@@ -24,6 +24,14 @@ public class Pair implements Serializable {
 		return pair;
 	}
 
+	public boolean isOpen() {
+		return top == null;
+	}
+
+	public Card getBottomCard() {
+		return bot;
+	}
+
 	@Override
 	public String toString() {
 		return "Pair{" +

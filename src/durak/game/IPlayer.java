@@ -1,5 +1,7 @@
 package durak.game;
 
+import java.util.ArrayList;
+
 public interface IPlayer {
 
     void handOut(Hand hand); //твои карты
@@ -18,7 +20,9 @@ public interface IPlayer {
 
     void onGameStarted(); //игра начата-играй
 
-    void onGameFinished(); //игра окончена
+    void onGameFinished(int loserId); //игра окончена id дурака или -1 если ничья
+
+    void currentOpponentsList(ArrayList<Player> opponents); //список проивников
 
     void onPlayerDisconnected();
 }

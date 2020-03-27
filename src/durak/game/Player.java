@@ -1,6 +1,7 @@
 package durak.game;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Player implements IPlayer, Serializable {
 	private IGame game;
@@ -15,6 +16,10 @@ public class Player implements IPlayer, Serializable {
 
 	public Player() {
 
+	}
+
+	public Card getCard(int index){
+		return hand.getCards().get(index);
 	}
 
 	public void register(IGame game) {
@@ -69,7 +74,12 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	@Override
-	public void onGameFinished() {
+	public void onGameFinished(int loserId) {
+
+	}
+
+	@Override
+	public void currentOpponentsList(ArrayList<Player> opponents) {
 
 	}
 
