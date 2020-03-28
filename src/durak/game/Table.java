@@ -9,7 +9,7 @@ public class Table implements Serializable {
 
 	private ArrayList<Pair> thrownCard = new ArrayList<>();
 
-	Table(Deck deck) {
+	public Table(Deck deck) {
 		this.deck = deck;
 	}
 

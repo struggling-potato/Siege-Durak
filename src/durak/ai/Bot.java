@@ -3,6 +3,7 @@ package durak.ai;
 import durak.game.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 public class Bot implements IPlayer {
@@ -11,26 +12,24 @@ public class Bot implements IPlayer {
 	private IGame game;
 	private Hand  hand = new Hand();
 
-	private Table table = new Table();
+	private Deck                   checkDeck          = new Deck();
+	private Table                  table              = new Table(checkDeck);
+	private HashMap<Card, Integer> cardIntegerHashMap = new HashMap<>();
+	private Trump                  trump              = new Trump();
 
-	public Bot(IGame game) {
+	public Bot() {
+		for (Card card : checkDeck.getCards()) {
+			cardIntegerHashMap.put(card, cardIntegerHashMap.getOrDefault(card, 0) + 1);
+		}
+	}
+
+	public void register(IGame game) {
 		this.game = game;
 		game.registerPlayer(this);
-		Trump trump = new Trump();
-		trump.setSuit(Suit.SUIT_CLOVERS);
-		Deck deck = new Deck();
-		deck.setTrump(trump);
-		table.setDeck(deck);
 	}
 
 	public int getId() {
 		return id;
-	}
-
-	public void printHand() {
-		for (Card card : hand.getCards()) {
-			System.out.println(card);
-		}
 	}
 
 	private int countSuit(Suit suit) {
@@ -39,11 +38,6 @@ public class Bot implements IPlayer {
 		return OneSuit.size();
 	}
 
-	private int countRank(Rank rank) {
-		ArrayList<Card> OneRank =
-				hand.filter((card) -> card.getRank().equals(rank));
-		return OneRank.size();
-	}
 
 	private ArrayList<Card> getMinEverySuit() {
 		ArrayList<Card> MyHand    = hand.getCards();
@@ -80,43 +74,108 @@ public class Bot implements IPlayer {
 		return EndRankCards;
 	}
 
+	@Override
+	public void handOut(Hand hand) {
+		System.out.println("handOut " + hand);
+		this.hand = hand;
+
+	}
+
+	@Override
+	public void makeMove() {
+		for (Card card : hand.getCards()) {
+			cardIntegerHashMap.put(card, cardIntegerHashMap.getOrDefault(card, 0) + 1);
+		}
+		if (getInGameCards().size() <= 12) {
+			findCardWithNoAnswer().ifPresent((card) -> {
+				System.out.println(card);
+				game.throwCard(id, card);
+			});
+		}
+		else {
+			ArrayList<Card> someCards = findMinPair();
+			if (someCards.size() < 2) {
+				Card card = findMin();
+				System.out.println(card);
+				game.throwCard(id, card);
+			}
+			else {
+				for (Card card : someCards) {
+					System.out.println(card);
+					game.throwCard(id, card);
+				}
+			}
+		}
+	}
+
+	private ArrayList<Card> getInGameCards() {
+		ArrayList<Card> cards = new ArrayList<>();
+		for (Card card : checkDeck.getCards()) {
+			if (cardIntegerHashMap.get(card) < 2)
+				cards.add(card);
+		}
+		return cards;
+	}
+
+	private Optional<Card> findCardWithNoAnswer() {
+		Optional<Card> resultCard = Optional.empty();
+		for (Card card : hand.getCards()) {
+			if ((!findHypotheticalAnswer(card)) && (card.getSuit() != trump.getSuit())) {
+				resultCard = Optional.of(card);
+				return resultCard;
+			}
+		}
+		return resultCard;
+	}
+
 	private Card findMin() {
 		ArrayList<Card> EverySuits  = getMinEverySuit();
 		Card            MinCard     = EverySuits.get(0);
 		Card            MinSaveCard = MinCard;
 		boolean         canSave     = false;
 		Card            MinTrump    = MinCard;
-		if (countSuit(MinSaveCard.getSuit()) > 1)
+		if ((countSuit(MinSaveCard.getSuit()) > 1) && (MinSaveCard.getRank().compareTo(Rank.RANK_9) > 0))
 			canSave = true;
 		for (Card card : EverySuits) {
-			if (card.getRank().compareTo(MinCard.getRank()) < 0) {
-				if (card.getSuit() == table.getDeck().getTrump().getSuit())
-					MinTrump = card;
-				else if ((countSuit(card.getSuit()) > 1) && (card.getRank().compareTo(MinSaveCard.getRank()) < 0)) {
-					MinSaveCard = card;
-					canSave = true;
-				}
-				else
-					MinCard = card;
+			if (card.getSuit() == trump.getSuit())
+				MinTrump = card;
+			else if ((countSuit(card.getSuit()) > 1) && (card.getRank().compareTo(MinSaveCard.getRank()) < 0) &&
+			         (card.getRank().compareTo(Rank.RANK_9) > 0)) {
+				MinSaveCard = card;
+				canSave = true;
 			}
+			else if (card.getRank().compareTo(MinCard.getRank()) < 0)
+				MinCard = card;
 		}
-		if (canSave)
+		if ((canSave) && (MinCard.getRank().compareTo(Rank.RANK_9) > 0))
 			return MinSaveCard;
 		if (MinCard.getSuit() == MinTrump.getSuit())
 			return MinTrump;
 		return MinCard;
 	}
 
+	private boolean findHypotheticalAnswer(Card attackCard) {
+		for (Card card : getInGameCards()) {
+			if ((card.getSuit() == attackCard.getSuit()) && (card.getRank().compareTo(attackCard.getRank()) > 0))
+				return true;
+		}
+		return false;
+	}
 
-	private Optional<Card> findMinToss(Card TossCard) {
-		Optional<Card> MinCard = Optional.empty();
-		for (Card card : hand.getCards()) {
-			if ((card.getRank().compareTo(TossCard.getRank()) == 0) &&
-			    (card.getSuit() != table.getDeck().getTrump().getSuit())) {
-				MinCard = Optional.of(card);
+	@Override
+	public void defendYourself() {
+		for (Pair pair : table.getThrownCard()) {
+			if (pair.isOpen()) {
+				findMinAnswer(pair.getBottomCard())
+						.ifPresentOrElse((card) -> {
+							System.out.println(card);
+							game.beatCard(id, new Pair(pair.getBottomCard(), card));
+						}, () -> {
+							System.out.println("Take it");
+							game.giveUpDefence(id);
+						});
 			}
 		}
-		return MinCard;
 	}
 
 	private Optional<Card> findMinAnswer(Card ThrownCard) {
@@ -126,9 +185,9 @@ public class Bot implements IPlayer {
 				MinCard = Optional.of(card);
 			}
 		}
-		if ((MinCard.isEmpty()) && (ThrownCard.getSuit() != table.getDeck().getTrump().getSuit())) {
+		if ((MinCard.isEmpty()) && (ThrownCard.getSuit() != trump.getSuit())) {
 			ArrayList<Card> trumps =
-					hand.filter((card) -> card.getSuit().equals(table.getDeck().getTrump().getSuit()));
+					hand.filter((card) -> card.getSuit().equals(trump.getSuit()));
 			if (trumps.isEmpty())
 				return MinCard;
 			trumps.sort(null);
@@ -137,55 +196,41 @@ public class Bot implements IPlayer {
 		return MinCard;
 	}
 
-
-	@Override
-	public void handOut(Hand hand) {
-		this.hand = hand;
-	}
-
-	@Override
-	public void makeMove() {
-		ArrayList<Card> Pair = findMinPair();
-		if (Pair.size() < 2) {
-			Card card = findMin();
-			System.out.println(card);
-			game.throwCard(id, card);
-		}
-		else {
-			for (Card card : Pair) {
-				System.out.println(card);
-				game.throwCard(id, card);
-			}
-		}
-	}
-
-	@Override
-	public void defendYourself() {
-		findMinAnswer(new Card(Suit.SUIT_TILES, Rank.RANK_10))
-				.ifPresentOrElse((card) -> {
-					System.out.println(card);
-					game.beatCard(id, new Pair(new Card(Suit.SUIT_TILES, Rank.RANK_10), card));
-				}, () -> {
-					System.out.println("Take it");
-					game.giveUpDefence(id);
-				});
-	}
-
 	@Override
 	public void tossCards() {
-		findMinToss(new Card(Suit.SUIT_PIKES, Rank.RANK_8))
-				.ifPresentOrElse((card) -> {
-					System.out.println(card);
-					game.tossCard(id, card);
-				}, () -> {
-					System.out.println("{Nothing to toss}");
-					game.passTossing(id);
-				});
+		for (Pair pair : table.getThrownCard()) {
+			for (Card thrownCard : pair.getCards()) {
+				findMinToss(thrownCard)
+						.ifPresent((card) -> {
+							System.out.println(card);
+							game.tossCard(id, card);
+						});
+			}
+		}
+		System.out.println("{Nothing to toss}");
+		game.passTossing(id);
+	}
+
+	private Optional<Card> findMinToss(Card TossCard) {
+		Optional<Card> MinCard = Optional.empty();
+		for (Card card : hand.getCards()) {
+			if ((card.getRank().compareTo(TossCard.getRank()) == 0) &&
+			    (card.getSuit() != trump.getSuit())) {
+				MinCard = Optional.of(card);
+			}
+		}
+		return MinCard;
 	}
 
 	@Override
 	public void currentTable(Table table) {
 		this.table = table;
+		this.trump = table.getDeck().getTrump();
+		for (Pair pair : table.getDump().getCards()) {
+			for (Card card : pair.getCards()) {
+				cardIntegerHashMap.put(card, cardIntegerHashMap.getOrDefault(card, 0) + 1);
+			}
+		}
 	}
 
 	@Override
@@ -195,6 +240,26 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void endMove() {
+		System.out.println("Turn is over");
+	}
+
+	@Override
+	public void onGameStarted() {
+
+	}
+
+	@Override
+	public void onGameFinished(int loserId) {
+
+	}
+
+	@Override
+	public void currentOpponentsList(ArrayList<Player> opponents) {
+
+	}
+
+	@Override
+	public void onPlayerDisconnected() {
 
 	}
 }
