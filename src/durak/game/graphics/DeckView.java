@@ -17,11 +17,12 @@ public class DeckView {
 	public DeckView() {}
 
 	public void setTrump(Card trump, ClassLoader classLoader) {
-		// Be careful! Trump should only includes card name from assets directory without file extension, ex. clovers_Q
+
 		String url = CardToImage.getCartImageUrl(trump);
 
 		try {
 			this.trump = ImageIO.read(classLoader.getResourceAsStream(url));
+
 			cover = ImageIO.read(classLoader.getResourceAsStream("assets/cover.png"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -29,12 +30,12 @@ public class DeckView {
 	}
 
 	public boolean isTrumpSet() {
-		return trump != null;
+		return trump != null && cover != null;
 	}
 
 	public void draw(Graphics g) {
 		double rotation = Math.toRadians(90);
-		double location = trump.getHeight() / 2;
+		double location = (double) trump.getHeight() / 2;
 		AffineTransform tx = AffineTransform.getRotateInstance(rotation, location, location);
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 
