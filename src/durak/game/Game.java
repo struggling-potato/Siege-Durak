@@ -22,13 +22,33 @@ public class Game implements IGame, ServerGame {
 	private HashMap<Integer, Hand>        idToHand          = new HashMap<>();
 	private HashMap<Integer, PlayerState> idToState         = new HashMap<>();
 
+	@Override
+	public void throwCard(int playerId, Card card) {
+		System.out.println("throwCard {" + playerId + ", " + card + "}");
+		PlayerState curState = idToState.get(playerId);
+		Hand        curHand  = idToHand.get(playerId);
+		if (checkStateAndCard(curState, curHand, card, null)) {
+			IPlayer curPlayer = playerIdToIPlayer.get(playerId);
+			curHand.getCards().remove(card);
+			table.getThrownCard().add(new Pair(card));
+			for (var player : playerIdToIPlayer.values()) {
+				if (player.equals(curPlayer)) {
+					player.handOut(curHand);
+				}
+				player.currentTable(table);
+			}
+		}
+	}
+
 	boolean checkStateAndCard(PlayerState current, Hand currentHand, Card checkingCard, Pair pair) {
 		switch (current) {
 			case STATE_MOVE: {
 				return currentHand.getCards().stream().anyMatch((c) -> c.equals(checkingCard));
 			}
 			case STATE_DEFEND: {
-				if (!table.getThrownCard().stream().anyMatch((p)-> p.isOpen() && p.getBottomCard().equals(pair.getBottomCard())))
+				if (!table.getThrownCard()
+				          .stream()
+				          .anyMatch((p) -> p.isOpen() && p.getBottomCard().equals(pair.getBottomCard())))
 					return false;
 				return !pair.isOpen()
 				       && currentHand.getCards().stream().anyMatch((c) -> c.equals(pair.getTopCard()))
@@ -45,28 +65,10 @@ public class Game implements IGame, ServerGame {
 	}
 
 	@Override
-	public void throwCard(int playerId, Card card) {
-		System.out.println("throwCard {" + playerId + ", " + card + "}");
-		PlayerState curState = idToState.get(playerId);
-		Hand curHand = idToHand.get(playerId);
-		if (checkStateAndCard(curState, curHand, card, null)) {
-			IPlayer curPlayer = playerIdToIPlayer.get(playerId);
-			curHand.getCards().remove(card);
-			table.getThrownCard().add(new Pair(card));
-			for (var player : playerIdToIPlayer.values()) {
-				if (player.equals(curPlayer)) {
-					player.handOut(curHand);
-				}
-				player.currentTable(table);
-			}
-		}
-	}
-
-	@Override
 	public void tossCard(int playerId, Card card) {
 		System.out.println("tossCard {" + playerId + ", " + card + "}");
 		PlayerState curState = idToState.get(playerId);
-		Hand curHand = idToHand.get(playerId);
+		Hand        curHand  = idToHand.get(playerId);
 		if (checkStateAndCard(curState, curHand, card, null)) {
 			IPlayer curPlayer = playerIdToIPlayer.get(playerId);
 			curHand.getCards().remove(card);
@@ -84,11 +86,11 @@ public class Game implements IGame, ServerGame {
 	public void beatCard(int playerId, Pair pair) {
 		System.out.println("beatCard {" + playerId + ", " + pair + "}");
 		PlayerState curState = idToState.get(playerId);
-		Hand curHand = idToHand.get(playerId);
+		Hand        curHand  = idToHand.get(playerId);
 		if (checkStateAndCard(curState, curHand, null, pair)) {
 			IPlayer curPlayer = playerIdToIPlayer.get(playerId);
 			curHand.getCards().remove(pair.getTopCard());
-			table.getThrownCard().removeIf((p)-> p.getBottomCard().equals(pair.getBottomCard()));
+			table.getThrownCard().removeIf((p) -> p.getBottomCard().equals(pair.getBottomCard()));
 			table.getThrownCard().add(pair);
 			for (var player : playerIdToIPlayer.values()) {
 				if (player.equals(curPlayer)) {
@@ -102,13 +104,30 @@ public class Game implements IGame, ServerGame {
 	@Override
 	public void passTossing(int playerId) {
 		System.out.println("passTossing {" + playerId + "}");
-		// TODO: Change state
+		idToState.replace(playerId, PlayerState.STATE_WAIT);
+		idToState.replace(++currentId, PlayerState.STATE_MOVE);
+		idToState.replace(++currentId, PlayerState.STATE_DEFEND);
 	}
 
 	@Override
 	public void giveUpDefence(int playerId) {
 		System.out.println("giveUpDefence {" + playerId + "}");
-		// TODO: Change state and get cards from table
+
+		Hand curHand      = idToHand.get(playerId);
+		var  cardsOnTable = table.getThrownCard();
+		for (var pair : cardsOnTable) {
+			var cards = pair.getCards();
+
+			for (var card : cards) {
+				curHand.addCard(card);
+			}
+		}
+		table.getThrownCard().clear();
+
+		idToState.replace(playerId, PlayerState.STATE_WAIT);
+		currentId += 2;
+		idToState.replace(currentId, PlayerState.STATE_MOVE);
+		idToState.replace(++currentId, PlayerState.STATE_DEFEND);
 	}
 
 	@Override
