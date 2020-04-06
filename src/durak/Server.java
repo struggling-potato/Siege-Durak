@@ -1,22 +1,19 @@
 package durak;
 
+import durak.communication.Connector;
 import durak.game.Game;
-import durak.game.Player;
+
+import java.io.IOException;
 
 public class Server {
 
-	public static void main(String[] args) throws InterruptedException {
-		Game game = new Game();
+	public static void main(String[] args) throws InterruptedException, IOException {
+		Game      game      = new Game();
+		Connector connector = new Connector();
+		connector.registerServer(game, 1488);
 
-		Player player1 = new Player();
-		Player player2 = new Player();
+		Thread.sleep(10000);
 
-		player1.register(game);
-		player2.register(game);
-
-		game.start();
-
-		game.exitGame(player1.getId());
-		game.exitGame(player2.getId());
+		game.waitAndStart();
 	}
 }

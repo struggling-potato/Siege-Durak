@@ -1,15 +1,32 @@
 package durak;
 
+import durak.communication.Connector;
+import durak.communication.ServerInfo;
+import durak.game.IGame;
+import durak.game.Player;
+
 import durak.game.*;
 import durak.game.graphics.Buttons;
 import durak.game.graphics.ClientView;
 
 import java.util.ArrayList;
 
+import java.io.IOException;
+
 public class Client {
 
-    public static void main(String[] args) {
-	    /*ClientView clientView = new ClientView();
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Connector connector = new Connector();
+        IGame     game      = connector.connectToServer(new ServerInfo("localhost", 1488)).get();
+
+        Player player1 = new Player();
+        player1.register(game);
+        Player player2 = new Player();
+        player2.register(game);
+
+        Thread.sleep(10000);
+
+        /*ClientView clientView = new ClientView();
 	    clientView.setTrump(new Card(Suit.SUIT_HEARTS, Rank.RANK_6));
 	    clientView.drawStringState("Новый стейт");
 	    Hand hand1 = new Hand();
@@ -49,6 +66,5 @@ public class Client {
 	    thrownCards.add(new Pair(new Card(Suit.SUIT_HEARTS, Rank.RANK_Q), new Card(Suit.SUIT_PIKES, Rank.RANK_A)));
 	    table.setThrownCards(thrownCards);  // Если хотите глянуть, то добавьте сеттер в класс Table или придумайте другой способ сформировать пары
 	    clientView.drawTable(table);*/
-
     }
 }

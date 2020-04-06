@@ -231,7 +231,7 @@ public class Game implements IGame, ServerGame {
 			}
 		}
 
-		while (true) {
+		while (!players.isEmpty()) {
 			int moveId = IPlayerToPlayerId.get(players.get(getMovingPlayerIdx()));
 			idToState.put(moveId, PlayerState.STATE_MOVE);
 			playerIdToIPlayer.get(moveId).makeMove();
