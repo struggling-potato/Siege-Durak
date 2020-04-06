@@ -15,7 +15,7 @@ public class Controller implements IPlayer, IController {
 	private       PlayerState       currentPlayerState;
 	private       Table             table;
 
-	private Controller(Game game) {
+	public Controller(Game game) {
 		this.game = game;
 		currentPlayerState = PlayerState.STATE_INVALID;
 	}
