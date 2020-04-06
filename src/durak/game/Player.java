@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Player implements IPlayer, Serializable {
-	private IGame game;
+	private transient IGame game;
 	private int   id;
 	private Hand  hand = new Hand();
 
