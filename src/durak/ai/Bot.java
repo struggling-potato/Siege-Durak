@@ -83,6 +83,7 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void makeMove() {
+		System.out.println("makeMove " + id);
 		for (Card card : hand.getCards()) {
 			cardIntegerHashMap.put(card, cardIntegerHashMap.getOrDefault(card, 0) + 1);
 		}
@@ -164,6 +165,7 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void defendYourself() {
+		System.out.println("defendYourself " + id);
 		for (Pair pair : table.getThrownCard()) {
 			if (pair.isOpen()) {
 				findMinAnswer(pair.getBottomCard())
@@ -198,6 +200,7 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void tossCards() {
+		System.out.println("tossCards " + id);
 		for (Pair pair : table.getThrownCard()) {
 			for (Card thrownCard : pair.getCards()) {
 				findMinToss(thrownCard)
@@ -236,6 +239,7 @@ public class Bot implements IPlayer {
 	@Override
 	public void onPlayerRegistered(int playerId) {
 		id = playerId;
+		System.out.println("onPlayerRegistered " + id);
 	}
 
 	@Override

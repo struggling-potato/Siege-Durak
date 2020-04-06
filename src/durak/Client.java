@@ -1,9 +1,9 @@
 package durak;
 
+import durak.ai.Bot;
 import durak.communication.Connector;
 import durak.communication.ServerInfo;
 import durak.game.IGame;
-import durak.game.Player;
 
 import durak.game.*;
 import durak.game.graphics.Buttons;
@@ -19,9 +19,9 @@ public class Client {
         Connector connector = new Connector();
         IGame     game      = connector.connectToServer(new ServerInfo("localhost", 1488)).get();
 
-        Player player1 = new Player();
+        Bot player1 = new Bot();
         player1.register(game);
-        Player player2 = new Player();
+        Bot player2 = new Bot();
         player2.register(game);
 
         Thread.sleep(10000);
