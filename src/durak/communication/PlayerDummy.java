@@ -1,9 +1,8 @@
 package durak.communication;
 
-import durak.game.Hand;
-import durak.game.IGame;
-import durak.game.IPlayer;
-import durak.game.Table;
+import durak.game.*;
+
+import java.util.ArrayList;
 
 class PlayerDummy implements IPlayer {
 	private Connector connector;
@@ -102,11 +101,21 @@ class PlayerDummy implements IPlayer {
 	}
 
 	@Override
-	public void onGameFinished() {
+	public void onGameFinished(int loserId) {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
 		Message message = (info) -> {
 			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
-			player.onGameFinished();
+			player.onGameFinished(loserId);
+		};
+		sendMessageToPlayer(message);
+	}
+
+	@Override
+	public void currentOpponentsList(ArrayList<Player> opponents) {
+		int dummyPlayerId = connector.getPlayerDummyId(this);
+		Message message = (info) -> {
+			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			player.currentOpponentsList(opponents);
 		};
 		sendMessageToPlayer(message);
 	}
