@@ -166,17 +166,21 @@ public class Bot implements IPlayer {
 	@Override
 	public void defendYourself() {
 		System.out.println(id + " defendYourself");
+		boolean isToss = false;
 		for (Pair pair : table.getThrownCard()) {
 			if (pair.isOpen()) {
-				findMinAnswer(pair.getBottomCard())
-						.ifPresentOrElse((card) -> {
+				var opt = findMinAnswer(pair.getBottomCard());
+				if (opt.isPresent())
+					isToss = true;
+					opt.ifPresent((card) -> {
 							System.out.println(card);
 							game.beatCard(id, new Pair(pair.getBottomCard(), card));
-						}, () -> {
-							System.out.println("Take it");
-							game.giveUpDefence(id);
 						});
 			}
+		}
+		if (!isToss) {
+			System.out.println(id + " Take it");
+			game.giveUpDefence(id);
 		}
 	}
 
@@ -201,17 +205,22 @@ public class Bot implements IPlayer {
 	@Override
 	public void tossCards() {
 		System.out.println(id + " tossCards");
+		boolean isToss = false;
 		for (Pair pair : table.getThrownCard()) {
 			for (Card thrownCard : pair.getCards()) {
-				findMinToss(thrownCard)
-						.ifPresent((card) -> {
-							System.out.println(card);
-							game.tossCard(id, card);
-						});
+				var opt = findMinToss(thrownCard);
+				if (opt.isPresent())
+					isToss = true;
+				opt.ifPresent((card) -> {
+					System.out.println(card);
+					game.tossCard(id, card);
+				});
 			}
 		}
-		System.out.println("{Nothing to toss}");
-		game.passTossing(id);
+		if (!isToss) {
+			System.out.println("{Nothing to toss}");
+			game.passTossing(id);
+		}
 	}
 
 	private Optional<Card> findMinToss(Card TossCard) {
@@ -240,11 +249,12 @@ public class Bot implements IPlayer {
 	@Override
 	public void onPlayerRegistered(int playerId) {
 		id = playerId;
+		System.out.println(id + " onPlayerRegistered");
 	}
 
 	@Override
 	public void endMove() {
-		System.out.println("Turn is over");
+		System.out.println(id + " Turn is over");
 	}
 
 	@Override
