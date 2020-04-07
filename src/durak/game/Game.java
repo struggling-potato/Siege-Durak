@@ -24,7 +24,7 @@ public class Game implements IGame, ServerGame {
 
 	@Override
 	public void throwCard(int playerId, Card card) {
-		System.out.println("throwCard {" + playerId + ", " + card + "}");
+		System.out.println(playerId + " throwCard {" + card + "}");
 		PlayerState curState = idToState.get(playerId);
 		Hand        curHand  = idToHand.get(playerId);
 		if (checkStateAndCard(curState, curHand, card, null)) {
@@ -66,7 +66,7 @@ public class Game implements IGame, ServerGame {
 
 	@Override
 	public void tossCard(int playerId, Card card) {
-		System.out.println("tossCard {" + playerId + ", " + card + "}");
+		System.out.println(playerId + " tossCard {" + ", " + card + "}");
 		PlayerState curState = idToState.get(playerId);
 		Hand        curHand  = idToHand.get(playerId);
 		if (checkStateAndCard(curState, curHand, card, null)) {
@@ -84,7 +84,7 @@ public class Game implements IGame, ServerGame {
 
 	@Override
 	public void beatCard(int playerId, Pair pair) {
-		System.out.println("beatCard {" + playerId + ", " + pair + "}");
+		System.out.println(playerId + " beatCard { " + pair + " }");
 		PlayerState curState = idToState.get(playerId);
 		Hand        curHand  = idToHand.get(playerId);
 		if (checkStateAndCard(curState, curHand, null, pair)) {
@@ -103,7 +103,7 @@ public class Game implements IGame, ServerGame {
 
 	@Override
 	public void passTossing(int playerId) {
-		System.out.println("passTossing {" + playerId + "}");
+		System.out.println(playerId + " passTossing");
 		idToState.replace(playerId, PlayerState.STATE_WAIT);
 		idToState.replace(++currentId, PlayerState.STATE_MOVE);
 		idToState.replace(++currentId, PlayerState.STATE_DEFEND);
@@ -111,7 +111,7 @@ public class Game implements IGame, ServerGame {
 
 	@Override
 	public void giveUpDefence(int playerId) {
-		System.out.println("giveUpDefence {" + playerId + "}");
+		System.out.println(playerId + "giveUpDefence");
 
 		Hand curHand      = idToHand.get(playerId);
 		var  cardsOnTable = table.getThrownCard();
@@ -124,10 +124,14 @@ public class Game implements IGame, ServerGame {
 		}
 		table.getThrownCard().clear();
 
-		idToState.replace(playerId, PlayerState.STATE_WAIT);
-		currentId += 2;
-		idToState.replace(currentId, PlayerState.STATE_MOVE);
-		idToState.replace(++currentId, PlayerState.STATE_DEFEND);
+		synchronized (players) {
+			players.notify();
+		}
+
+//		idToState.replace(playerId, PlayerState.STATE_WAIT);
+//		currentId += 2;
+//		idToState.replace(currentId, PlayerState.STATE_MOVE);
+//		idToState.replace(++currentId, PlayerState.STATE_DEFEND);
 	}
 
 	@Override
@@ -214,11 +218,14 @@ public class Game implements IGame, ServerGame {
 		System.out.println(deck.getTrump().getSuit());
 
 		for (int playerIdx = 0; playerIdx < players.size(); ++playerIdx) {
+
 			IPlayer player = players.get(playerIdx);
 			Hand    hand   = new Hand();
 
-			for (int i = 0; i < 6; i++) {
-				hand.addCard(deck.takeCardFromDeck());
+			if (playerIdx != 1) {
+				for (int i = 0; i < 6; i++) {
+					hand.addCard(deck.takeCardFromDeck());
+				}
 			}
 
 			int playerId = IPlayerToPlayerId.get(players.get(getMovingPlayerIdx(playerIdx)));
@@ -248,16 +255,25 @@ public class Game implements IGame, ServerGame {
 					playerIdToIPlayer.get(curId).endMove();
 				}
 			}
-			try {
-				Thread.sleep(5000);
+//			try {
+			synchronized (players) {
+//					while (!nextMoveCondition()) {
+				try {
+					players.wait(5000);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+//					}
 			}
-			catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+//			}
+//			catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 			for (int i = 0; i < players.size(); ++i) {
-				IPlayer player = players.get(getMovingPlayerIdx(i));
-				int  playerId = IPlayerToPlayerId.get(player);
-				Hand curHand  = idToHand.get(playerId);
+				IPlayer player   = players.get(getMovingPlayerIdx(i));
+				int     playerId = IPlayerToPlayerId.get(player);
+				Hand    curHand  = idToHand.get(playerId);
 				while (curHand.getCards().size() < 6)
 					curHand.addCard(table.getDeck().takeCardFromDeck());
 
@@ -268,5 +284,4 @@ public class Game implements IGame, ServerGame {
 			curMoveIdx++;
 		}
 	}
-
 }
