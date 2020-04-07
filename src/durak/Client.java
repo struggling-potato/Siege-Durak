@@ -49,5 +49,6 @@ public class Client {
 	    thrownCards.add(new Pair(new Card(Suit.SUIT_HEARTS, Rank.RANK_Q), new Card(Suit.SUIT_PIKES, Rank.RANK_A)));
 	    table.setThrownCards(thrownCards);  // Если хотите глянуть, то добавьте сеттер в класс Table или придумайте другой способ сформировать пары
 	    clientView.drawTable(table);*/
+
     }
 }

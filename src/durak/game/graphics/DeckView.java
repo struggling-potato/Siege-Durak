@@ -17,12 +17,10 @@ public class DeckView {
 	public DeckView() {}
 
 	public void setTrump(Card trump, ClassLoader classLoader) {
-
 		String url = CardToImage.getCartImageUrl(trump);
 
 		try {
 			this.trump = ImageIO.read(classLoader.getResourceAsStream(url));
-
 			cover = ImageIO.read(classLoader.getResourceAsStream("assets/cover.png"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
