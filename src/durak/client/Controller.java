@@ -145,7 +145,22 @@ public class Controller implements IPlayer, IController {
 
 	@Override
 	public void onCardsClicked(List<Integer> cardsIdx) {
-
+		if (currentPlayerState == PlayerState.STATE_MOVE) {
+			List<Card> cards=new ArrayList<>();
+			for (Integer cardIdx: cardsIdx){
+				cards.add(player.getCard(cardIdx));
+			}
+			game.throwCards(player.getId(), cards);
+			view.drawStringState("Ожидание противника");
+		}
+		if (currentPlayerState == PlayerState.STATE_TOSS) {
+			List<Card> cards=new ArrayList<>();
+			for (Integer cardIdx: cardsIdx){
+				cards.add(player.getCard(cardIdx));
+			}
+			game.tossCards(player.getId(), cards);
+			view.drawStringState("Ожидание противника");
+		}
 	}
 
 	@Override
