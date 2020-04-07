@@ -248,13 +248,24 @@ public class Game implements IGame, ServerGame {
 					playerIdToIPlayer.get(curId).endMove();
 				}
 			}
-			curMoveIdx++;
 			try {
 				Thread.sleep(5000);
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			for (int i = 0; i < players.size(); ++i) {
+				IPlayer player = players.get(getMovingPlayerIdx(i));
+				int  playerId = IPlayerToPlayerId.get(player);
+				Hand curHand  = idToHand.get(playerId);
+				while (curHand.getCards().size() < 6)
+					curHand.addCard(table.getDeck().takeCardFromDeck());
+
+				idToHand.put(playerId, curHand);
+				player.handOut(curHand);
+			}
+
+			curMoveIdx++;
 		}
 	}
 

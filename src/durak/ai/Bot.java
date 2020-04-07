@@ -76,14 +76,14 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void handOut(Hand hand) {
-		System.out.println("handOut " + hand);
+		System.out.println(id + " handOut " + hand);
 		this.hand = hand;
 
 	}
 
 	@Override
 	public void makeMove() {
-		System.out.println("makeMove " + id);
+		System.out.println(id + " makeMove");
 		for (Card card : hand.getCards()) {
 			cardIntegerHashMap.put(card, cardIntegerHashMap.getOrDefault(card, 0) + 1);
 		}
@@ -165,7 +165,7 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void defendYourself() {
-		System.out.println("defendYourself " + id);
+		System.out.println(id + " defendYourself");
 		for (Pair pair : table.getThrownCard()) {
 			if (pair.isOpen()) {
 				findMinAnswer(pair.getBottomCard())
@@ -200,7 +200,7 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void tossCards() {
-		System.out.println("tossCards " + id);
+		System.out.println(id + " tossCards");
 		for (Pair pair : table.getThrownCard()) {
 			for (Card thrownCard : pair.getCards()) {
 				findMinToss(thrownCard)
@@ -239,7 +239,6 @@ public class Bot implements IPlayer {
 	@Override
 	public void onPlayerRegistered(int playerId) {
 		id = playerId;
-		System.out.println("onPlayerRegistered " + id);
 	}
 
 	@Override
@@ -249,21 +248,22 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void onGameStarted() {
-
+		System.out.println(id + " onGameStarted");
 	}
 
 	@Override
 	public void onGameFinished(int loserId) {
-
+		System.out.println(id + " onGameFinished " + loserId);
 	}
 
 	@Override
 	public void currentOpponentsList(ArrayList<Player> opponents) {
-
+		System.out.println(id + " currentOpponentsList " + opponents);
 	}
 
 	@Override
 	public void onPlayerDisconnected() {
+		System.out.println(id + " onPlayerDisconnected");
 
 	}
 }
