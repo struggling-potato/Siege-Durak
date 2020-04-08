@@ -327,7 +327,14 @@ public class Game implements IGame, ServerGame {
     }
 
     int getMovingPlayerIdx() {
-        return iPlayers.size() == 0 ? -1 : curMoveIdx % iPlayers.size();
+        return getMovingPlayerIdx(0);
+    }
+
+    int activePlayersCount() {
+        if (!table.getDeck().getCards().isEmpty())
+            return iPlayers.size();
+
+        return (int) idToHand.values().stream().filter(hand -> !hand.getCards().isEmpty()).count();
     }
 
     public boolean nextMoveCondition() {
@@ -387,7 +394,7 @@ public class Game implements IGame, ServerGame {
                 retry(curId);
             }
             synchronized (iPlayers) {
-                setTimeOut(50000);
+                setTimeOut(60000);
                 while (!nextMoveCondition()) {
                     try {
                         iPlayers.wait();
@@ -405,7 +412,7 @@ public class Game implements IGame, ServerGame {
             }
 
             var  cardsOnTable = table.getThrownCard();
-            if (giveUp) {
+            if (giveUp || timeOut) {
                 IPlayer iPlayer  = iPlayers.get(getMovingPlayerIdx(1));
                 Player  player   = players.get(getMovingPlayerIdx(1));
                 int     playerId = IPlayerToPlayerId.get(iPlayer);
@@ -419,7 +426,7 @@ public class Game implements IGame, ServerGame {
                 }
                 player.handOut(iPlayerHand);
                 table.getThrownCard().clear();
-                curMoveIdx++;
+                incPlayerMoveIdx();
                 giveUp = false;
             }
             else {
@@ -430,11 +437,13 @@ public class Game implements IGame, ServerGame {
             }
 
             for (int i = 0; i < iPlayers.size(); ++i) {
+                if (table.getDeck().getCards().isEmpty())
+                    break;
                 IPlayer iPlayer  = iPlayers.get(getMovingPlayerIdx(i));
                 Player  player   = players.get(getMovingPlayerIdx(i));
                 int     playerId = IPlayerToPlayerId.get(iPlayer);
                 Hand    curHand  = idToHand.get(playerId);
-                while (curHand.getCards().size() < 6)
+                while (!table.getDeck().getCards().isEmpty() && curHand.getCards().size() < 6)
                     curHand.addCard(table.getDeck().takeCardFromDeck());
 
                 idToHand.put(playerId, curHand);
@@ -442,14 +451,46 @@ public class Game implements IGame, ServerGame {
                 player.handOut(curHand);
             }
 
-            curMoveIdx++;
+            int playersCount = activePlayersCount();
+            if (playersCount >= 1) {
+                incPlayerMoveIdx();
+            }
+
+            if (playersCount <= 1) {
+                int loserId = playersCount == 0 ? -1: getMovingPlayerIdx();
+                for (var iPlayer: iPlayers) {
+                    iPlayer.onGameFinished(loserId);
+                }
+                try {
+                    Thread.sleep(10000);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
         }
+    }
+
+    void incPlayerMoveIdx() {
+        curMoveIdx++;
+        while (idToHand.get(IPlayerToPlayerId.get(iPlayers.get(getMovingPlayerIdx()))).getCards().isEmpty()) curMoveIdx++;
     }
 
     private boolean timerCanceled;
 
     int getMovingPlayerIdx(int offset) {
-        return iPlayers.size() == 0 ? -1 : (curMoveIdx + offset) % iPlayers.size();
+        boolean emptyDeck = table.getDeck().getCards().isEmpty();
+        for (int i = 0; i < iPlayers.size(); ++i) {
+            int idx = iPlayers.size() == 0 ? -1 : (curMoveIdx + offset) % iPlayers.size();
+            if (idx < 0)
+                return idx;
+            boolean emptyHand = idToHand.get(IPlayerToPlayerId.get(iPlayers.get(idx))).getCards().isEmpty();
+            if (emptyDeck && emptyHand)
+                continue;
+            return idx;
+        }
+        return -1;
     }
 
     private void setTimeOut(int millisecondsTimeOut) {

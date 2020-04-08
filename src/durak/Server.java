@@ -12,8 +12,6 @@ public class Server {
 		Connector connector = new Connector();
 		connector.registerServer(game, 1488);
 
-		Thread.sleep(10000);
-
 		game.waitAndStart();
 	}
 }
