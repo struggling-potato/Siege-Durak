@@ -1,7 +1,7 @@
 package durak;
 
 import durak.communication.Connector;
-import durak.game.Game;
+import durak.server.Game;
 
 import java.io.IOException;
 

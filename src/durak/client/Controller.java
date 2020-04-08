@@ -12,11 +12,11 @@ public class Controller implements IPlayer, IController {
 	private final Player            player    = new Player();
 	private final ClientView        view      = new ClientView();
 	private       ArrayList<Player> opponents = new ArrayList<>();
-	private       Game              game;
+	private       IGame              game;
 	private       PlayerState       currentPlayerState;
 	private       Table             table;
 
-	public Controller(Game game) {
+	public Controller(IGame game) {
 		this.game = game;
 		currentPlayerState = PlayerState.STATE_INVALID;
 	}
