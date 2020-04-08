@@ -1,18 +1,14 @@
 package durak.game.graphics;
 
-import durak.client.Controller;
 import durak.client.IController;
 import durak.client.IView;
 import durak.game.*;
-
 import durak.game.graphics.utils.CardToImage;
-
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,7 +22,6 @@ public class ClientView extends JFrame implements IView {
 		BUTTON_MAP.put(Buttons.BUTTONS_EXITGAME, "Выйти из игры");
 	}
 
-	}
 	private final IController controller;
 	private ClassLoader classLoader = getClass().getClassLoader();
 	private JPanel      tablePanel;
@@ -49,12 +44,13 @@ public class ClientView extends JFrame implements IView {
 
 	public ClientView(IController controller) {
 		super("Siege-Durak");
-		setBounds(50,0,1600,1050);
+		setBounds(50, 0, 1600, 1050);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		try {
 			tableImage = ImageIO.read(classLoader.getResourceAsStream("assets/table.jpg"));
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			ex.printStackTrace();
 		}
 
@@ -62,7 +58,7 @@ public class ClientView extends JFrame implements IView {
 		add(tablePanel);
 		setVisible(true);
 
-		this.controller=controller;
+		this.controller = controller;
 	}
 
 	public void setTrump(Card card) {
