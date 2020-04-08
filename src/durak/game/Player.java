@@ -22,6 +22,10 @@ public class Player implements IPlayer, Serializable {
 		return hand.getCards().get(index);
 	}
 
+	// Для отрисовки руки опонента нужна либо сама рука, либо количество карт в руке. Поскольку по API договорились
+	// передавать игроков, то добавлю этот метод сюда
+	public int getHandSize() { return hand.getCards().size(); }
+
 	public void register(IGame game) {
 		this.game = game;
 		game.registerPlayer(this);
