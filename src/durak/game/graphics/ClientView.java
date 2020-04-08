@@ -39,7 +39,7 @@ public class ClientView extends JFrame implements IView {
 	private Image       tableImage;
 	private DeckView    deckView = new DeckView();
 	private Hand        playerHand;
-	private CardPanel[] cardPanels;
+	private ArrayList<CardPanel> cardPanels = new ArrayList<>();
 	private boolean     cardsState = false;
 
 	public ClientView(IController controller) {
@@ -71,6 +71,8 @@ public class ClientView extends JFrame implements IView {
 	public void drawTable(Table table) {
 		Suit trumpSuit = table.getDeck().getTrump().getSuit();
 		setTrump(new Card(trumpSuit, Rank.RANK_A));
+
+		pairsPanel.removeAll();
 
 		for(Pair pair: table.getThrownCard()) {
 			PairPanel pairPanel = new PairPanel(pair);
@@ -107,6 +109,7 @@ public class ClientView extends JFrame implements IView {
 			playerHandPanel.add(cardPanel);
 			playerHandPanel.revalidate();
 			validate();
+			cardPanels.add(cardPanel);
 		}
 		repaint();
 	}
