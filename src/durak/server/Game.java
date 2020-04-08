@@ -363,11 +363,11 @@ public class Game implements IGame, ServerGame {
             Player  player  = players.get(playerIdx);
             Hand    hand    = new Hand();
 
-            if (playerIdx != 1) {
+//            if (playerIdx != 1) {
                 for (int i = 0; i < 6; i++) {
                     hand.addCard(deck.takeCardFromDeck());
                 }
-            }
+//            }
 
             int playerId = IPlayerToPlayerId.get(iPlayers.get(getMovingPlayerIdx(playerIdx)));
 
@@ -378,6 +378,10 @@ public class Game implements IGame, ServerGame {
             for (Card card : hand.getCards()) {
                 System.out.println("{" + card.getSuit() + ":" + card.getRank() + "}");
             }
+        }
+
+        for (var iPlayer: iPlayers) {
+            iPlayer.onGameStarted();
         }
 
         while (!iPlayers.isEmpty()) {
@@ -394,7 +398,7 @@ public class Game implements IGame, ServerGame {
                 retry(curId);
             }
             synchronized (iPlayers) {
-                setTimeOut(60000);
+                setTimeOut(10000);
                 while (!nextMoveCondition()) {
                     try {
                         iPlayers.wait();

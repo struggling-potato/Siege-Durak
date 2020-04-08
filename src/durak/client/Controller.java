@@ -19,6 +19,7 @@ public class Controller implements IPlayer, IController {
 	public Controller(IGame game) {
 		this.game = game;
 		currentPlayerState = PlayerState.STATE_INVALID;
+		game.registerPlayer(this);
 	}
 
 	@Override
@@ -73,6 +74,10 @@ public class Controller implements IPlayer, IController {
 	public void onGameStarted() {
 		currentPlayerState = PlayerState.STATE_WAIT;
 		view.drawStringState("Ожидание хода");
+	}
+
+	public IView getView() {
+		return view;
 	}
 
 	@Override
