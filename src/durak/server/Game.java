@@ -320,7 +320,7 @@ public class Game implements IGame, ServerGame {
         System.out.println("Trump in this game:");
         System.out.println(deck.getTrump().getSuit());
 
-        idToState.put(2, PlayerState.STATE_INVALID);
+//        idToState.put(2, PlayerState.STATE_INVALID);
 
         for (int playerIdx = 0; playerIdx < activePlayersCount(); ++playerIdx) {
 
@@ -328,11 +328,11 @@ public class Game implements IGame, ServerGame {
             Player  player  = players.get(playerIdx);
             Hand    hand    = new Hand();
 
-            if (IPlayerToPlayerId.get(iPlayer) != 2) {
+//            if (IPlayerToPlayerId.get(iPlayer) != 2) {
                 for (int i = 0; i < 6; i++) {
                     hand.addCard(deck.takeCardFromDeck());
                 }
-            }
+//            }
 
             int playerId = IPlayerToPlayerId.get(iPlayers.get(getMovingPlayerIdx(playerIdx)));
 
