@@ -286,7 +286,8 @@ public class Bot implements IPlayer {
 
 	@Override
 	public void currentTable(Table table) {
-		System.out.println(id + " currentTable: " + table);
+		System.out.println(id + " currentTable trump: " + table.getDeck().getTrump().getSuit() + " cards: " +
+		                   table.getThrownCard().size() + " deck: " + table.getDeck().getCards().size());
 		this.table = table;
 		this.trump = table.getDeck().getTrump();
 		for (Pair pair : table.getDump().getCards()) {
