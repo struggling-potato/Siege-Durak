@@ -5,6 +5,7 @@ import durak.game.graphics.Buttons;
 import durak.game.graphics.ClientView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Controller implements IPlayer, IController {
 
@@ -103,6 +104,7 @@ public class Controller implements IPlayer, IController {
 	public void onButtonPressed(Buttons buttonId) {
 		switch (buttonId) {
 			case BUTTON_START:
+				System.out.println("start pressed");
 				view.setButtonState(Buttons.BUTTON_START, false);
 				view.drawStringState("Ожидание противников");
 				game.startGame(player.getId());
@@ -137,6 +139,26 @@ public class Controller implements IPlayer, IController {
 		}
 		if (currentPlayerState == PlayerState.STATE_TOSS) {
 			game.tossCard(player.getId(), player.getCard(cardIdx));
+			view.drawStringState("Ожидание противника");
+		}
+	}
+
+	@Override
+	public void onCardsClicked(List<Integer> cardsIdx) {
+		if (currentPlayerState == PlayerState.STATE_MOVE) {
+			List<Card> cards=new ArrayList<>();
+			for (Integer cardIdx: cardsIdx){
+				cards.add(player.getCard(cardIdx));
+			}
+			game.throwCards(player.getId(), cards);
+			view.drawStringState("Ожидание противника");
+		}
+		if (currentPlayerState == PlayerState.STATE_TOSS) {
+			List<Card> cards=new ArrayList<>();
+			for (Integer cardIdx: cardsIdx){
+				cards.add(player.getCard(cardIdx));
+			}
+			game.tossCards(player.getId(), cards);
 			view.drawStringState("Ожидание противника");
 		}
 	}
