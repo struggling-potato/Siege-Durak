@@ -6,6 +6,7 @@ import durak.game.IPlayer;
 import durak.game.Pair;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class GameDummy implements IGame {
 	private Connector connector;
@@ -21,6 +22,12 @@ class GameDummy implements IGame {
 		sendMessageToGame(message);
 	}
 
+	@Override
+	public void throwCards(int playerId, List<Card> cards) {
+		Message message = (info) -> info.getGame().ifPresent((game -> game.throwCards(playerId, cards)));
+		sendMessageToGame(message);
+	}
+
 	private void sendMessageToGame(Message message) {
 		if (!isDisconnected)
 			connector.sendMessageToGame(this, message);
@@ -29,6 +36,12 @@ class GameDummy implements IGame {
 	@Override
 	public void tossCard(int playerId, Card card) {
 		Message message = (info) -> info.getGame().ifPresent((game -> game.tossCard(playerId, card)));
+		sendMessageToGame(message);
+	}
+
+	@Override
+	public void tossCards(int playerId, List<Card> cards) {
+		Message message = (info) -> info.getGame().ifPresent((game -> game.tossCards(playerId, cards)));
 		sendMessageToGame(message);
 	}
 
