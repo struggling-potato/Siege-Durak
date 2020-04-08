@@ -1,5 +1,7 @@
 package durak.game.graphics;
 
+import durak.client.Controller;
+import durak.client.IController;
 import durak.client.IView;
 import durak.game.*;
 
@@ -24,6 +26,8 @@ public class ClientView extends JFrame implements IView {
 		BUTTON_MAP.put(Buttons.BUTTONS_EXITGAME, "Выйти из игры");
 	}
 
+	}
+	private final IController controller;
 	private ClassLoader classLoader = getClass().getClassLoader();
 	private JPanel      tablePanel;
 	private JPanel      deckPanel;
@@ -43,7 +47,7 @@ public class ClientView extends JFrame implements IView {
 	private CardPanel[] cardPanels;
 	private boolean     cardsState = false;
 
-	public ClientView() {
+	public ClientView(IController controller) {
 		super("Siege-Durak");
 		setBounds(50,0,1600,1050);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,6 +61,8 @@ public class ClientView extends JFrame implements IView {
 		gameStatusBar.setBackground(new Color(255, 255, 255, 153));
 		add(tablePanel);
 		setVisible(true);
+
+		this.controller=controller;
 	}
 
 	public void setTrump(Card card) {
