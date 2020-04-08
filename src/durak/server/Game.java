@@ -152,7 +152,8 @@ public class Game implements IGame, ServerGame {
             table.getThrownCard().add(pair);
             for (var player : playerIdToIPlayer.values()) {
                 if (!player.equals(curPlayer)) {
-                    idToState.replace(IPlayerToPlayerId.get(player), PlayerState.STATE_TOSS);
+                    if (idToState.get(IPlayerToPlayerId.get(player)) != PlayerState.STATE_INVALID)
+                        idToState.replace(IPlayerToPlayerId.get(player), PlayerState.STATE_TOSS);
                 }
                 retry(IPlayerToPlayerId.get(player));
             }
@@ -177,6 +178,29 @@ public class Game implements IGame, ServerGame {
     }
 
     private boolean giveUp;
+
+    @Override
+    public void tossCard(int playerId, Card card) {
+        System.out.println(playerId + " tossCard {" + ", " + card + "}");
+        PlayerState curState = idToState.get(playerId);
+        Hand        curHand  = idToHand.get(playerId);
+        if (checkStateAndCard(curState, curHand, card, null)) {
+            Player curPlayer = playerIdToPlayer.get(playerId);
+            curHand.getCards().remove(card);
+            table.getThrownCard().add(new Pair(card));
+            curPlayer.handOut(curHand);
+
+            for (var player : playerIdToIPlayer.values()) {
+                retry(IPlayerToPlayerId.get(player));
+            }
+        }
+        else {
+            retry(playerId);
+        }
+    }    @Override
+    public boolean waitCondition() {
+        return iPlayers.size() >= 3;
+    }
 
     private void retry(int playerId) {
         IPlayer curIPlayer = playerIdToIPlayer.get(playerId);
@@ -205,29 +229,10 @@ public class Game implements IGame, ServerGame {
             }
             case STATE_INVALID:
             default: {
-                curIPlayer.onPlayerDisconnected();
+                return;
+//                curIPlayer.onPlayerDisconnected();
                 // TODO: Удалить игрока
             }
-        }
-    }
-
-    @Override
-    public void tossCard(int playerId, Card card) {
-        System.out.println(playerId + " tossCard {" + ", " + card + "}");
-        PlayerState curState = idToState.get(playerId);
-        Hand        curHand  = idToHand.get(playerId);
-        if (checkStateAndCard(curState, curHand, card, null)) {
-            Player  curPlayer  = playerIdToPlayer.get(playerId);
-            curHand.getCards().remove(card);
-            table.getThrownCard().add(new Pair(card));
-            curPlayer.handOut(curHand);
-
-            for (var player : playerIdToIPlayer.values()) {
-                retry(IPlayerToPlayerId.get(player));
-            }
-        }
-        else {
-            retry(playerId);
         }
     }
 
@@ -305,48 +310,6 @@ public class Game implements IGame, ServerGame {
     }
 
     @Override
-    public boolean waitCondition() {
-        return iPlayers.size() >= 2;
-    }
-
-    @Override
-    public void waitAndStart() {
-        synchronized (iPlayers) {
-            while (!waitCondition()) {
-                System.out.println("!waitCondition()");
-                try {
-                    iPlayers.wait();
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        System.out.println("start()");
-        start();
-    }
-
-    int getMovingPlayerIdx() {
-        return getMovingPlayerIdx(0);
-    }
-
-    int activePlayersCount() {
-        if (!table.getDeck().getCards().isEmpty())
-            return iPlayers.size();
-
-        return (int) idToHand.values().stream().filter(hand -> !hand.getCards().isEmpty()).count();
-    }
-
-    public boolean nextMoveCondition() {
-        boolean stateWaitAll = idToState.values().stream().filter(state -> state == PlayerState.STATE_WAIT).count() ==
-                               iPlayers.size() - 1;
-        boolean noOpenCards = table.getThrownCard().stream().filter(pair -> pair.isOpen()).count() == 0;
-        System.out.println("nextMoveCondition timeOut " + timeOut);
-        System.out.println("nextMoveCondition stateWaitAll " + stateWaitAll);
-        return timeOut || (noOpenCards && stateWaitAll);
-    }
-
-    @Override
     public void start() {
         System.out.println("Game started");
         System.out.println("Players: " + iPlayers);
@@ -357,17 +320,19 @@ public class Game implements IGame, ServerGame {
         System.out.println("Trump in this game:");
         System.out.println(deck.getTrump().getSuit());
 
-        for (int playerIdx = 0; playerIdx < iPlayers.size(); ++playerIdx) {
+        idToState.put(2, PlayerState.STATE_INVALID);
+
+        for (int playerIdx = 0; playerIdx < activePlayersCount(); ++playerIdx) {
 
             IPlayer iPlayer = iPlayers.get(playerIdx);
             Player  player  = players.get(playerIdx);
             Hand    hand    = new Hand();
 
-//            if (playerIdx != 1) {
+            if (IPlayerToPlayerId.get(iPlayer) != 2) {
                 for (int i = 0; i < 6; i++) {
                     hand.addCard(deck.takeCardFromDeck());
                 }
-//            }
+            }
 
             int playerId = IPlayerToPlayerId.get(iPlayers.get(getMovingPlayerIdx(playerIdx)));
 
@@ -393,12 +358,13 @@ public class Game implements IGame, ServerGame {
                 int curId = it.next();
                 if (moveId != curId &&
                     defId != curId) {
-                    idToState.put(curId, PlayerState.STATE_WAIT);
+                    if (idToState.get(curId) != PlayerState.STATE_INVALID)
+                        idToState.put(curId, PlayerState.STATE_WAIT);
                 }
                 retry(curId);
             }
             synchronized (iPlayers) {
-                setTimeOut(10000);
+                setTimeOut(60000);
                 while (!nextMoveCondition()) {
                     try {
                         iPlayers.wait();
@@ -411,7 +377,8 @@ public class Game implements IGame, ServerGame {
 
             for (var it = playerIdToIPlayer.keySet().iterator(); it.hasNext(); ) {
                 int curId = it.next();
-                idToState.put(curId, PlayerState.STATE_WAIT);
+                if (idToState.get(curId) != PlayerState.STATE_INVALID)
+                    idToState.put(curId, PlayerState.STATE_WAIT);
                 retry(curId);
             }
 
@@ -440,14 +407,15 @@ public class Game implements IGame, ServerGame {
                 table.getThrownCard().clear();
             }
 
-            for (int i = 0; i < iPlayers.size(); ++i) {
+            for (int i = 0; i < activePlayersCount(); ++i) {
                 if (table.getDeck().getCards().isEmpty())
                     break;
                 IPlayer iPlayer  = iPlayers.get(getMovingPlayerIdx(i));
                 Player  player   = players.get(getMovingPlayerIdx(i));
                 int     playerId = IPlayerToPlayerId.get(iPlayer);
                 Hand    curHand  = idToHand.get(playerId);
-                while (!table.getDeck().getCards().isEmpty() && curHand.getCards().size() < 6)
+                while (idToState.get(playerId) != PlayerState.STATE_INVALID && !table.getDeck().getCards().isEmpty() &&
+                       curHand.getCards().size() < 6)
                     curHand.addCard(table.getDeck().takeCardFromDeck());
 
                 idToHand.put(playerId, curHand);
@@ -476,9 +444,55 @@ public class Game implements IGame, ServerGame {
         }
     }
 
+    @Override
+    public void waitAndStart() {
+        synchronized (iPlayers) {
+            while (!waitCondition()) {
+                System.out.println("!waitCondition()");
+                try {
+                    iPlayers.wait();
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("start()");
+        start();
+    }
+
+    int getMovingPlayerIdx() {
+        return getMovingPlayerIdx(0);
+    }
+
+
+
+    public boolean nextMoveCondition() {
+        boolean stateWaitAll = idToState.values().stream().filter(state -> state == PlayerState.STATE_WAIT).count() ==
+                               iPlayers.size() - 1 -
+                               idToState.values().stream().filter(state -> state == PlayerState.STATE_INVALID).count();
+        boolean noOpenCards = table.getThrownCard().stream().filter(pair -> pair.isOpen()).count() == 0;
+        System.out.println("nextMoveCondition timeOut " + timeOut);
+        System.out.println("nextMoveCondition stateWaitAll " + stateWaitAll);
+        return timeOut || (noOpenCards && stateWaitAll);
+    }
+
     void incPlayerMoveIdx() {
         curMoveIdx++;
-        while (idToHand.get(IPlayerToPlayerId.get(iPlayers.get(getMovingPlayerIdx()))).getCards().isEmpty()) curMoveIdx++;
+        int curPlayerId = IPlayerToPlayerId.get(iPlayers.get(getMovingPlayerIdx()));
+        while (idToState.get(curPlayerId) != PlayerState.STATE_INVALID &&
+               idToHand.get(curPlayerId).getCards().isEmpty())
+            curMoveIdx++;
+    }
+
+    int activePlayersCount() {
+        if (!table.getDeck().getCards().isEmpty())
+            return (int) (iPlayers.size() - idToState.values()
+                                                     .stream()
+                                                     .filter(playerState -> playerState == PlayerState.STATE_INVALID)
+                                                     .count());
+
+        return (int) idToHand.values().stream().filter(hand -> !hand.getCards().isEmpty()).count();
     }
 
     private boolean timerCanceled;
@@ -486,11 +500,12 @@ public class Game implements IGame, ServerGame {
     int getMovingPlayerIdx(int offset) {
         boolean emptyDeck = table.getDeck().getCards().isEmpty();
         for (int i = 0; i < iPlayers.size(); ++i) {
-            int idx = iPlayers.size() == 0 ? -1 : (curMoveIdx + offset) % iPlayers.size();
+            int idx = iPlayers.size() == 0 ? -1 : (curMoveIdx + offset + i) % iPlayers.size();
             if (idx < 0)
                 return idx;
-            boolean emptyHand = idToHand.get(IPlayerToPlayerId.get(iPlayers.get(idx))).getCards().isEmpty();
-            if (emptyDeck && emptyHand)
+            int playerId = IPlayerToPlayerId.get(iPlayers.get(idx));
+            boolean emptyHand = idToHand.get(playerId).getCards().isEmpty();
+            if (idToState.get(playerId) == PlayerState.STATE_INVALID || (emptyDeck && emptyHand))
                 continue;
             return idx;
         }

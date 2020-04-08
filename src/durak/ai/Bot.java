@@ -192,8 +192,9 @@ public class Bot implements IPlayer {
 				if (pair.isOpen()) {
 					var opt = findMinAnswer(pair.getBottomCard(), hand);
 						opt.ifPresent((card) -> {
-							System.out.println(card);
-							game.beatCard(id, new Pair(pair.getBottomCard(), card));
+							Pair beatPair = new Pair(pair.getBottomCard(), card);
+							System.out.println(beatPair);
+							game.beatCard(id, beatPair);
 							hand.getCards().remove(opt.get());
 						});
 				}

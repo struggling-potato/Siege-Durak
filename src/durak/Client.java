@@ -22,8 +22,8 @@ public class Client {
 
         Bot player1 = new Bot();
         player1.register(game);
-//        Bot player2 = new Bot();
-//        player2.register(game);
+        Bot player2 = new Bot();
+        player2.register(game);
 //
 //        Thread.sleep(100000);
 
