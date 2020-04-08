@@ -194,6 +194,7 @@ public class Bot implements IPlayer {
 						opt.ifPresent((card) -> {
 							System.out.println(card);
 							game.beatCard(id, new Pair(pair.getBottomCard(), card));
+							hand.getCards().remove(opt.get());
 						});
 				}
 			}
@@ -235,6 +236,7 @@ public class Bot implements IPlayer {
 				if (opt.isPresent())
 					opt.ifPresent((card) -> {
 						tossingCards.add(card);
+						hand.getCards().remove(opt.get());
 					});
 			}
 		}
