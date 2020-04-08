@@ -8,32 +8,41 @@ import durak.game.graphics.utils.CardToImage;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ClientView extends JFrame implements IView {
-	private final IController controller;
-	private ClassLoader classLoader = getClass().getClassLoader();
-	private JPanel      tablePanel;
-	private JPanel      deckPanel;
-	private JPanel      playerHandPanel;
-	private JButton     actionButton;
-	private JLabel      enemyPlayer1Label;
-	private JLabel      enemyPlayer2Label;
-	private JLabel      playerNameLabel;
-	private JPanel      enemyPlayer1Panel;
-	private JPanel      enemyPlayer2Panel;
-	private JPanel      gameStatusBar;
-	private JLabel      gameStateLabel;
-	private JPanel pairsPanel;
-	private Image       tableImage;
-	private DeckView    deckView = new DeckView();
-	private Hand        playerHand;
-	private ArrayList<CardPanel> cardPanels = new ArrayList<>();
-	private boolean     cardsState = false;
+	private final IController          controller;
+	private       ClassLoader          classLoader = getClass().getClassLoader();
+	private       JPanel               tablePanel;
+	private       JPanel               deckPanel;
+	private       JPanel               playerHandPanel;
+	private       JButton              actionButton;
+	private       JButton              tableButton;
+	private       JLabel               enemyPlayer1Label;
+	private       JLabel               enemyPlayer2Label;
+	private       JLabel               playerNameLabel;
+	private       JPanel               enemyPlayer1Panel;
+	private       JPanel               enemyPlayer2Panel;
+	private       JPanel               gameStatusBar;
+	private       JLabel               gameStateLabel;
+	private       JPanel               pairsPanel;
+	private       Image                tableImage;
+	private       DeckView             deckView    = new DeckView();
+	private       Hand                 playerHand;
+	private       ArrayList<CardPanel> cardPanels  = new ArrayList<>();
+	private       boolean              cardsState  = false;
+
+	private MouseAdapter tableAdapter = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			System.out.println(
+					"clicked y: " + e.getComponent().getY() + " x: " + e.getComponent().getX() + " yy: " + e.getY() +
+					" xx: " + e.getX());
+		}
+	};
 
 	public ClientView(IController controller) {
 		super("Siege-Durak");
@@ -52,12 +61,12 @@ public class ClientView extends JFrame implements IView {
 		setVisible(true);
 
 		this.controller = controller;
-		actionButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				controller.onButtonPressed(Buttons.getButtonId(actionButton.getText()));
-			}
-		});
+		actionButton.addActionListener(e -> controller.onButtonPressed(Buttons.getButtonId(actionButton.getText())));
+		pairsPanel.addMouseListener(tableAdapter);
+//		tableButton.addActionListener(actionEvent -> {
+//			controller.onta;
+//		});
+//		tablePanel.add()
 	}
 
 	public void setTrump(Card card) {
@@ -80,6 +89,10 @@ public class ClientView extends JFrame implements IView {
 			pairPanel.setOpaque(false);
 			pairsPanel.add(pairPanel);
 			pairPanel.revalidate();
+			System.out.println(
+					"pair " + pair + " x " + pairsPanel.getComponents()[pairsPanel.getComponents().length - 1].getX());
+			System.out.println(
+					"pair " + pair + " y " + pairsPanel.getComponents()[pairsPanel.getComponents().length - 1].getY());
 			validate();
 		}
 		repaint();
