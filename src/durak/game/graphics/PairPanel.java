@@ -28,6 +28,7 @@ public class PairPanel extends JPanel {
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
+			System.err.println(botUrl);
 		}
 	}
 
