@@ -16,16 +16,6 @@ public class Pair implements Serializable {
 		bot = card;
 	}
 
-	public Card getTopCard() {
-		return top;
-	}
-
-
-	public boolean isValidPair(Trump trump) {
-		return isOpen() || (bot.getSuit() == top.getSuit() && bot.compareTo(top) < 0) ||
-		       (bot.getSuit() != trump.getSuit() && top.getSuit() == trump.getSuit());
-	}
-
 	public ArrayList<Card> getCards() {
 		ArrayList<Card> pair = new ArrayList<>();
 		pair.add(bot);
