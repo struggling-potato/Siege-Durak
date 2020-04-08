@@ -103,8 +103,8 @@ public class Bot implements IPlayer {
 			else {
 				for (Card card : someCards) {
 					System.out.println(card);
-					game.throwCard(id, card);
 				}
+				game.throwCards(id, someCards);
 			}
 		}
 	}
@@ -166,35 +166,56 @@ public class Bot implements IPlayer {
 	@Override
 	public void defendYourself() {
 		System.out.println(id + " defendYourself");
-		if (table.getThrownCard().isEmpty()) return;
-		boolean isToss = false;
+		if (table.getThrownCard().isEmpty())
+			return;
+		Hand    copyHand = new Hand();
+		boolean canBeat  = true;
+		for (Card card : hand.getCards())
+			copyHand.addCard(card);
 		for (Pair pair : table.getThrownCard()) {
 			if (pair.isOpen()) {
-				var opt = findMinAnswer(pair.getBottomCard());
-				if (opt.isPresent())
-					isToss = true;
-					opt.ifPresent((card) -> {
-							System.out.println(card);
-							game.beatCard(id, new Pair(pair.getBottomCard(), card));
-						});
+				var opt = findMinAnswer(pair.getBottomCard(), copyHand);
+				if (opt.isEmpty()) {
+					canBeat = false;
+					break;
+				}
+				else
+					copyHand.getCards().remove(opt.get());
 			}
 		}
-		if (!isToss) {
+		if (!canBeat) {
 			System.out.println(id + " Take it " + table.getThrownCard());
 			game.giveUpDefence(id);
 		}
+		else {
+			for (Pair pair : table.getThrownCard()) {
+				if (pair.isOpen()) {
+					var opt = findMinAnswer(pair.getBottomCard(), hand);
+						opt.ifPresent((card) -> {
+							System.out.println(card);
+							game.beatCard(id, new Pair(pair.getBottomCard(), card));
+						});
+				}
+			}
+		}
 	}
 
-	private Optional<Card> findMinAnswer(Card ThrownCard) {
+	private Optional<Card> findMinAnswer(Card ThrownCard, Hand currentHand) {
 		Optional<Card> MinCard = Optional.empty();
-		for (Card card : hand.getCards()) {
+		boolean        found   = false;
+		for (Card card : currentHand.getCards()) {
 			if ((card.getRank().compareTo(ThrownCard.getRank()) > 0) && (card.getSuit() == ThrownCard.getSuit())) {
-				MinCard = Optional.of(card);
+				if (!found) {
+					MinCard = Optional.of(card);
+					found = true;
+				}
+				else if (MinCard.get().getRank().compareTo(card.getRank()) > 0)
+					MinCard = Optional.of(card);
 			}
 		}
 		if ((MinCard.isEmpty()) && (ThrownCard.getSuit() != trump.getSuit())) {
 			ArrayList<Card> trumps =
-					hand.filter((card) -> card.getSuit().equals(trump.getSuit()));
+					currentHand.filter((card) -> card.getSuit().equals(trump.getSuit()));
 			if (trumps.isEmpty())
 				return MinCard;
 			trumps.sort(null);
@@ -203,33 +224,58 @@ public class Bot implements IPlayer {
 		return MinCard;
 	}
 
+
 	@Override
 	public void tossCards() {
 		System.out.println(id + " tossCards");
-		boolean isToss = false;
+		ArrayList<Card> tossingCards = new ArrayList<>();
 		for (Pair pair : table.getThrownCard()) {
 			for (Card thrownCard : pair.getCards()) {
 				var opt = findMinToss(thrownCard);
 				if (opt.isPresent())
-					isToss = true;
-				opt.ifPresent((card) -> {
-					System.out.println(card);
-					game.tossCard(id, card);
-				});
+					opt.ifPresent((card) -> {
+						tossingCards.add(card);
+					});
 			}
 		}
-		if (!isToss) {
+		if (tossingCards.isEmpty()) {
 			System.out.println("{Nothing to toss}");
 			game.passTossing(id);
+		}
+		else {
+			ArrayList<Card> tossingUnique = new ArrayList<>();
+			for (Card check : tossingCards) {
+				if (tossingUnique.isEmpty()) {
+					tossingUnique.add(check);
+				}
+				else {
+					boolean found = false;
+					for (Card uniqueCheck : tossingUnique) {
+						if (check == uniqueCheck)
+							found = true;
+					}
+					if (!found)
+						tossingUnique.add(check);
+				}
+			}
+			for (Card card : tossingUnique)
+				System.out.println(card);
+			game.tossCards(id, tossingUnique);
 		}
 	}
 
 	private Optional<Card> findMinToss(Card TossCard) {
 		Optional<Card> MinCard = Optional.empty();
 		for (Card card : hand.getCards()) {
-			if ((card.getRank().compareTo(TossCard.getRank()) == 0) &&
-			    (card.getSuit() != trump.getSuit())) {
-				MinCard = Optional.of(card);
+			if (getInGameCards().size() > 12) {
+				if ((card.getRank().compareTo(TossCard.getRank()) == 0) &&
+				    (card.getSuit() != trump.getSuit())) {
+					MinCard = Optional.of(card);
+				}
+			}
+			else {
+				if (card.getRank().compareTo(TossCard.getRank()) == 0)
+					MinCard = Optional.of(card);
 			}
 		}
 		return MinCard;
