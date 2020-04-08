@@ -8,20 +8,13 @@ import durak.game.graphics.utils.CardToImage;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ClientView extends JFrame implements IView {
-
-	private final static HashMap<Buttons, String> BUTTON_MAP = new HashMap<>();
-	static {
-		BUTTON_MAP.put(Buttons.BUTTON_START, "Начать игру");
-		BUTTON_MAP.put(Buttons.BUTTON_PASS, "Закончить ход");
-		BUTTON_MAP.put(Buttons.BUTTON_GIVEUP, "Взять карты");
-		BUTTON_MAP.put(Buttons.BUTTONS_EXITGAME, "Выйти из игры");
-	}
-
 	private final IController controller;
 	private ClassLoader classLoader = getClass().getClassLoader();
 	private JPanel      tablePanel;
@@ -59,6 +52,12 @@ public class ClientView extends JFrame implements IView {
 		setVisible(true);
 
 		this.controller = controller;
+		actionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controller.onButtonPressed(Buttons.getButtonId(actionButton.getText()));
+			}
+		});
 	}
 
 	public void setTrump(Card card) {
@@ -161,7 +160,7 @@ public class ClientView extends JFrame implements IView {
 
 	@Override
 	public void setButtonState(Buttons buttonId, boolean visible) {
-		actionButton.setText(BUTTON_MAP.get(buttonId));
+		actionButton.setText(buttonId.getLabel());
 		actionButton.setVisible(visible);
 	}
 
