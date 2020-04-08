@@ -1,4 +1,6 @@
-package durak.game;
+package durak.server;
+
+import durak.game.*;
 
 import java.util.*;
 
@@ -274,8 +276,6 @@ public class Game implements IGame, ServerGame {
 
         Deck deck = new Deck();
         table = new Table(deck);
-
-        table.setDeck(deck);
 
         System.out.println("Trump in this game:");
         System.out.println(deck.getTrump().getSuit());
