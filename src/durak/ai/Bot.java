@@ -166,6 +166,7 @@ public class Bot implements IPlayer {
 	@Override
 	public void defendYourself() {
 		System.out.println(id + " defendYourself");
+		if (table.getThrownCard().isEmpty()) return;
 		boolean isToss = false;
 		for (Pair pair : table.getThrownCard()) {
 			if (pair.isOpen()) {
@@ -179,7 +180,7 @@ public class Bot implements IPlayer {
 			}
 		}
 		if (!isToss) {
-			System.out.println(id + " Take it");
+			System.out.println(id + " Take it " + table.getThrownCard());
 			game.giveUpDefence(id);
 		}
 	}
