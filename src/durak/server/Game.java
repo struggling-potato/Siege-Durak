@@ -168,7 +168,11 @@ public class Game implements IGame, ServerGame {
         if (playerState == PlayerState.STATE_TOSS) {
             idToState.replace(playerId, PlayerState.STATE_WAIT);
             playerIdToIPlayer.get(playerId).endMove();
-            // TODO: Если все пасанули, то игра продолжается. Начинается следующий ход
+
+            if (nextMoveCondition())
+                synchronized (iPlayers) {
+                    iPlayers.notify();
+                }
         }
     }
 
@@ -329,9 +333,10 @@ public class Game implements IGame, ServerGame {
     public boolean nextMoveCondition() {
         boolean stateWaitAll = idToState.values().stream().filter(state -> state == PlayerState.STATE_WAIT).count() ==
                                iPlayers.size() - 1;
+        boolean noOpenCards = table.getThrownCard().stream().filter(pair -> pair.isOpen()).count() == 0;
         System.out.println("nextMoveCondition timeOut " + timeOut);
         System.out.println("nextMoveCondition stateWaitAll " + stateWaitAll);
-        return timeOut || (stateWaitAll);
+        return timeOut || (noOpenCards && stateWaitAll);
     }
 
     @Override
