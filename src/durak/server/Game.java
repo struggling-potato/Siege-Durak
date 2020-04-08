@@ -28,12 +28,59 @@ public class Game implements IGame, ServerGame {
 
     @Override
     public void throwCards(int playerId, List<Card> cards) {
+        System.out.println(playerId + " throwCard {" + cards + "}");
+        cards = cards.stream().sorted().distinct().collect(Collectors.toCollection(ArrayList::new));
+        PlayerState curState = idToState.get(playerId);
+        Hand        curHand  = idToHand.get(playerId);
+        ArrayList<Card> validCards = cards.stream()
+                                          .filter(card -> checkStateAndCard(curState, curHand, card, null))
+                                          .collect(Collectors.toCollection(ArrayList::new));
+        if (validCards.size() == cards.size()) {
+            Player  curPlayer  = playerIdToPlayer.get(playerId);
 
+            validCards.forEach(card -> {
+                curHand.getCards().remove(card);
+                table.getThrownCard().add(new Pair(card));
+            });
+
+            curPlayer.handOut(curHand);
+            idToState.replace(playerId, PlayerState.STATE_TOSS);
+
+            for (var player : playerIdToIPlayer.values()) {
+                retry(IPlayerToPlayerId.get(player));
+            }
+        }
+        else {
+            retry(playerId);
+        }
     }
 
     @Override
     public void tossCards(int playerId, List<Card> cards) {
+        System.out.println(playerId + " tossCard {" + ", " + cards + "}");
+        cards = cards.stream().sorted().distinct().collect(Collectors.toCollection(ArrayList::new));
+        PlayerState curState = idToState.get(playerId);
+        Hand        curHand  = idToHand.get(playerId);
+        ArrayList<Card> validCards = cards.stream()
+                                          .filter(card -> checkStateAndCard(curState, curHand, card, null))
+                                          .collect(Collectors.toCollection(ArrayList::new));
+        if (validCards.size() == cards.size()) {
+            Player  curPlayer  = playerIdToPlayer.get(playerId);
 
+            validCards.forEach(card -> {
+                curHand.getCards().remove(card);
+                table.getThrownCard().add(new Pair(card));
+            });
+
+            curPlayer.handOut(curHand);
+
+            for (var player : playerIdToIPlayer.values()) {
+                retry(IPlayerToPlayerId.get(player));
+            }
+        }
+        else {
+            retry(playerId);
+        }
     }
 
     private Timer timer = new Timer(true);
@@ -45,18 +92,14 @@ public class Game implements IGame, ServerGame {
         PlayerState curState = idToState.get(playerId);
         Hand        curHand  = idToHand.get(playerId);
         if (checkStateAndCard(curState, curHand, card, null)) {
-            IPlayer curIPlayer = playerIdToIPlayer.get(playerId);
             Player  curPlayer  = playerIdToPlayer.get(playerId);
             curHand.getCards().remove(card);
             table.getThrownCard().add(new Pair(card));
+            curPlayer.handOut(curHand);
+            idToState.replace(playerId, PlayerState.STATE_TOSS);
+
             for (var player : playerIdToIPlayer.values()) {
-                if (player.equals(curIPlayer)) {
-                    player.handOut(curHand);
-                    curPlayer.handOut(curHand);
-                }
-                player.currentTable(table);
-                if (idToState.get(IPlayerToPlayerId.get(player)) == PlayerState.STATE_DEFEND)
-                    player.defendYourself();
+                retry(IPlayerToPlayerId.get(player));
             }
         }
         else {
@@ -170,16 +213,13 @@ public class Game implements IGame, ServerGame {
         PlayerState curState = idToState.get(playerId);
         Hand        curHand  = idToHand.get(playerId);
         if (checkStateAndCard(curState, curHand, card, null)) {
-            IPlayer curIPlayer = playerIdToIPlayer.get(playerId);
             Player  curPlayer  = playerIdToPlayer.get(playerId);
             curHand.getCards().remove(card);
             table.getThrownCard().add(new Pair(card));
+            curPlayer.handOut(curHand);
+
             for (var player : playerIdToIPlayer.values()) {
-                if (player.equals(curIPlayer)) {
-                    player.handOut(curHand);
-                    curPlayer.handOut(curHand);
-                }
-                player.currentTable(table);
+                retry(IPlayerToPlayerId.get(player));
             }
         }
         else {
@@ -192,8 +232,6 @@ public class Game implements IGame, ServerGame {
         System.out.println(playerId + "giveUpDefence");
         if (giveUp) return;
         // TODO: Проблема с таймером, добавить поддержку нескольких карт в throwCard и tossCard
-        Hand curHand      = idToHand.get(playerId);
-        var  cardsOnTable = table.getThrownCard();
 
         synchronized (iPlayers) {
             for (int i = 0; i < iPlayers.size(); ++i) {
