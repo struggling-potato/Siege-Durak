@@ -45,8 +45,8 @@ public class Card implements Comparable, Serializable {
 
 	@Override
 	public String toString() {
-		return "Card{" +
-		       "suit=" + suit +
+		return "\nCard{" +
+		       "suit=" + suit.getEmoji() +
 		       ", rank=" + rank +
 		       '}';
 	}
