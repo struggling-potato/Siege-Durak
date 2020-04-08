@@ -9,12 +9,12 @@ import java.util.List;
 
 public class Controller implements IPlayer, IController {
 
-	private final Player            player    = new Player();
-	private final ClientView        view      = new ClientView();
-	private       ArrayList<Player> opponents = new ArrayList<>();
-	private       IGame              game;
-	private       PlayerState       currentPlayerState;
-	private       Table             table;
+	private final Player       player    = new Player();
+	private final IView        view;
+	private       List<Player> opponents = new ArrayList<>();
+	private       IGame         game;
+	private       PlayerState  currentPlayerState;
+	private       Table        table;
 
 	public Controller(IGame game) {
 		this.game = game;
