@@ -16,8 +16,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void handOut(Hand hand) {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.handOut(hand);
 		};
 		sendMessageToPlayer(message);
@@ -31,8 +32,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void makeMove() {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.makeMove();
 		};
 		sendMessageToPlayer(message);
@@ -41,8 +43,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void defendYourself() {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.defendYourself();
 		};
 		sendMessageToPlayer(message);
@@ -51,8 +54,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void tossCards() {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.tossCards();
 		};
 		sendMessageToPlayer(message);
@@ -61,8 +65,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void currentTable(Table table) {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.currentTable(table);
 		};
 		sendMessageToPlayer(message);
@@ -72,9 +77,10 @@ class PlayerDummy implements IPlayer {
 	public void onPlayerRegistered(int playerId) {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
 		id = playerId;
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message =
 				(info) -> {
-					IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+					IPlayer player = info.getConnector().playerByDummyId(remoteId);
 					player.onPlayerRegistered(playerId);
 				};
 		sendMessageToPlayer(message);
@@ -83,8 +89,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void endMove() {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.endMove();
 		};
 		sendMessageToPlayer(message);
@@ -93,8 +100,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void onGameStarted() {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.onGameStarted();
 		};
 		sendMessageToPlayer(message);
@@ -103,8 +111,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void onGameFinished(int loserId) {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.onGameFinished(loserId);
 		};
 		sendMessageToPlayer(message);
@@ -113,8 +122,9 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void currentOpponentsList(ArrayList<Player> opponents) {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.currentOpponentsList(opponents);
 		};
 		sendMessageToPlayer(message);
@@ -123,10 +133,11 @@ class PlayerDummy implements IPlayer {
 	@Override
 	public void onPlayerDisconnected() {
 		int dummyPlayerId = connector.getPlayerDummyId(this);
+		int remoteId = connector.translatePlayerIdToRemotePlayerId(dummyPlayerId);
 		Message message = (info) -> {
-			IPlayer player = info.getConnector().playerByDummyId(dummyPlayerId);
+			IPlayer player = info.getConnector().playerByDummyId(remoteId);
 			player.onPlayerDisconnected();
-			info.getConnector().cleanUpDummyOnPlayerDisconnected(dummyPlayerId);
+			info.getConnector().cleanUpDummyOnPlayerDisconnected(remoteId);
 		};
 		sendMessageToPlayer(message);
 	}

@@ -317,17 +317,39 @@ public class Connector {
 
 	PlayerDummy playerDummyById(IGame game, int playerDummyId, ExecuteInfo info) {
 		synchronized (dummyIdToPlayerDummy) {
-			PlayerDummy playerDummy = dummyIdToPlayerDummy.get(playerDummyId);
+			PlayerDummy playerDummy = dummyIdToPlayerDummy.get(remoteDToLocalD.get(playerDummyId));
 			if (null == playerDummy) {
-				playerDummy = new PlayerDummy(this);
-				dummyIdToPlayerDummy.put(playerDummyId, playerDummy);
-				playerDummyToDummyId.put(playerDummy, playerDummyId);
-				playerSockets.put(playerDummy, info.getSocketChannel());
-				ArrayList<PlayerDummy> playerDummyArrayList =
-						socketToPlayerDummy.getOrDefault(info.getSocketChannel(), new ArrayList<>());
-				playerDummyArrayList.add(playerDummy);
-				socketToPlayerDummy.put(info.getSocketChannel(), playerDummyArrayList);
+				playerDummyCreateById(game, playerDummyId, info);
 			}
+			return playerDummy;
+		}
+	}
+
+	private HashMap<Integer, Integer> localDToRemoteD = new HashMap<>();
+	private HashMap<Integer, Integer> remoteDToLocalD = new HashMap<>();
+
+	int translatePlayerIdToRemotePlayerId(int playerId) {
+		return localDToRemoteD.get(playerId);
+	}
+
+	PlayerDummy playerDummyCreateById(IGame game, int playerDummyId, ExecuteInfo info) {
+		synchronized (dummyIdToPlayerDummy) {
+			PlayerDummy playerDummy = dummyIdToPlayerDummy.get(lastDummyId);
+			while (null != playerDummy) {
+				playerDummy = dummyIdToPlayerDummy.get(++lastDummyId);
+			}
+
+			playerDummy = new PlayerDummy(this);
+			dummyIdToPlayerDummy.put(lastDummyId, playerDummy);
+			playerDummyToDummyId.put(playerDummy, lastDummyId);
+			localDToRemoteD.put(lastDummyId, playerDummyId);
+			remoteDToLocalD.put(playerDummyId, lastDummyId);
+			playerSockets.put(playerDummy, info.getSocketChannel());
+			ArrayList<PlayerDummy> playerDummyArrayList =
+					socketToPlayerDummy.getOrDefault(info.getSocketChannel(), new ArrayList<>());
+			playerDummyArrayList.add(playerDummy);
+			socketToPlayerDummy.put(info.getSocketChannel(), playerDummyArrayList);
+
 			return playerDummy;
 		}
 	}

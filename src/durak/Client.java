@@ -20,10 +20,10 @@ public class Client {
         Connector connector = new Connector();
         IGame     game      = connector.connectToServer(new ServerInfo("localhost", 1488)).get();
 
-        Bot player1 = new Bot();
-        player1.register(game);
-        Bot player2 = new Bot();
-        player2.register(game);
+//        Bot player1 = new Bot();
+//        player1.register(game);
+//        Bot player2 = new Bot();
+//        player2.register(game);
 //
 //        Thread.sleep(100000);
 

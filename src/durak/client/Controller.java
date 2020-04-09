@@ -24,6 +24,7 @@ public class Controller implements IPlayer, IController {
 
 	@Override
 	public void handOut(Hand hand) {
+		hand.sort();
 		player.handOut(hand);
 		view.drawHandOut(hand);
 	}
