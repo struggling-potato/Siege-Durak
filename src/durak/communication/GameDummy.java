@@ -67,7 +67,7 @@ class GameDummy implements IGame {
 	public void registerPlayer(IPlayer player) {
 		int dummyId = connector.getPlayerDummyId(player);
 		Message message = (info) -> info.getGame().ifPresent((game -> {
-			PlayerDummy playerDummy = info.getConnector().playerDummyById(game, dummyId, info);
+			PlayerDummy playerDummy = info.getConnector().playerDummyCreateById(game, dummyId, info);
 			game.registerPlayer(playerDummy);
 		}));
 		connector.tirePlayerWithDummy(this, player, dummyId);

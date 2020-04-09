@@ -166,6 +166,11 @@ public class Game implements IGame, ServerGame {
         } else {
             retry(playerId);
         }
+        if (nextMoveCondition()) {
+            synchronized (iPlayers) {
+                iPlayers.notify();
+            }
+        }
     }
 
     @Override
@@ -205,17 +210,22 @@ public class Game implements IGame, ServerGame {
         }
     }    @Override
     public boolean waitCondition() {
-        return iPlayers.size() >= 3;
+        return iPlayers.size() >= 2;
     }
 
     private void retry(int playerId) {
         IPlayer curIPlayer = playerIdToIPlayer.get(playerId);
+        Player curPlayer = playerIdToPlayer.get(playerId);
         Hand    curHand    = idToHand.get(playerId);
         curIPlayer.currentTable(table);
         curIPlayer.currentOpponentsList(players.stream()
                                                .filter(player -> player.getId() != playerId)
                                                .collect(Collectors.toCollection(ArrayList::new)));
         curIPlayer.handOut(curHand);
+        curPlayer.handOut(curHand);
+        if (curHand.getCards().isEmpty()) {
+            idToState.replace(playerId, PlayerState.STATE_WAIT);
+        }
         switch (idToState.get(playerId)) {
             case STATE_WAIT: {
                 curIPlayer.endMove();
@@ -275,10 +285,13 @@ public class Game implements IGame, ServerGame {
 
         synchronized (iPlayers) {
             iPlayers.add(player);
-            playerIdToIPlayer.put(currentId, player);
-            IPlayerToPlayerId.put(player, currentId);
-            idToHand.put(currentId, new Hand());
-            idToState.put(currentId, PlayerState.STATE_WAIT);
+            playerIdToIPlayer.put(id, player);
+            IPlayerToPlayerId.put(player, id);
+            idToHand.put(id, new Hand());
+            if (!isGameStarted)
+                idToState.put(id, PlayerState.STATE_WAIT);
+            else
+                idToState.put(id, PlayerState.STATE_INVALID);
             currentId++;
             Player newPlayer = new Player();
             newPlayer.onPlayerRegistered(id);
@@ -310,13 +323,33 @@ public class Game implements IGame, ServerGame {
 
     }
 
+    Integer startGameCount = 0;
+
     @Override
     public void startGame(int playerId) {
-
+        synchronized (iPlayers) {
+            startGameCount++;
+            if (startGameCount >= iPlayers.size() >> 1)
+                iPlayers.notify();
+        }
     }
+
+    private boolean isGameStarted;
 
     @Override
     public void start() {
+        synchronized (iPlayers) {
+            while (startGameCount < iPlayers.size() >> 1) {
+                try {
+                    iPlayers.wait();
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            isGameStarted = true;
+        }
+
         System.out.println("Game started");
         System.out.println("Players: " + iPlayers);
 
@@ -328,10 +361,11 @@ public class Game implements IGame, ServerGame {
 
 //        idToState.put(2, PlayerState.STATE_INVALID);
 
+        System.out.println("activePlayersCount " + activePlayersCount());
         for (int playerIdx = 0; playerIdx < activePlayersCount(); ++playerIdx) {
 
-            IPlayer iPlayer = iPlayers.get(playerIdx);
-            Player  player  = players.get(playerIdx);
+//            IPlayer iPlayer = iPlayers.get(playerIdx);
+//            Player  player  = players.get(playerIdx);
             Hand    hand    = new Hand();
 
 //            if (IPlayerToPlayerId.get(iPlayer) != 2) {
@@ -343,8 +377,8 @@ public class Game implements IGame, ServerGame {
             int playerId = IPlayerToPlayerId.get(iPlayers.get(getMovingPlayerIdx(playerIdx)));
 
             idToHand.put(playerId, hand);
-            iPlayer.handOut(hand);
-            player.handOut(hand);
+//            iPlayer.handOut(hand);
+//            player.handOut(hand);
             System.out.println(playerId + " player cards from deck: ");
             for (Card card : hand.getCards()) {
                 System.out.println("{" + card.getSuit() + ":" + card.getRank() + "}");

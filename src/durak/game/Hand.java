@@ -20,6 +20,10 @@ public class Hand implements Serializable {
 		return cards.stream().filter(predicate).collect(Collectors.toCollection(ArrayList::new));
 	}
 
+	public void sort() {
+		cards.sort(null);
+	}
+
 	@Override
 	public String toString() {
 		return "Hand{" +
