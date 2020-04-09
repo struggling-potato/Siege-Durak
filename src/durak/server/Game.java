@@ -127,7 +127,7 @@ public class Game implements IGame, ServerGame {
                                 .stream()
                                 .anyMatch((p) -> p.getCards()
                                                   .stream()
-                                                  .anyMatch((c) -> c.getRank() == checkingCard.getRank()));
+                                                  .anyMatch((c) -> !c.equals(checkingCard) && c.getRank() == checkingCard.getRank()));
                 }
                 case STATE_WAIT:
                 default: {
