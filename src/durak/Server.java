@@ -8,7 +8,7 @@ import java.io.IOException;
 public class Server {
 
 	public static void main(String[] args) throws InterruptedException, IOException {
-		Game      game      = new Game();
+		Game      game      = new Game(2);
 		Connector connector = new Connector();
 		connector.registerServer(game, 1488);
 

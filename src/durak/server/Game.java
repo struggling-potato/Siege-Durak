@@ -208,9 +208,17 @@ public class Game implements IGame, ServerGame {
         else {
             retry(playerId);
         }
-    }    @Override
+    }
+
+    private int minPlayers = 2;
+
+    public Game(int minPlayers) {
+        this.minPlayers = Integer.max(this.minPlayers, minPlayers);
+    }
+
+    @Override
     public boolean waitCondition() {
-        return iPlayers.size() >= 2;
+        return iPlayers.size() >= minPlayers;
     }
 
     private void retry(int playerId) {

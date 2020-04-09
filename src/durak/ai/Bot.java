@@ -301,6 +301,7 @@ public class Bot implements IPlayer {
 	public void onPlayerRegistered(int playerId) {
 		id = playerId;
 		System.out.println(id + " onPlayerRegistered");
+		game.startGame(id);
 	}
 
 	@Override
