@@ -150,6 +150,12 @@ public class Game implements IGame, ServerGame {
             curHand.getCards().remove(pair.getTopCard());
             table.getThrownCard().removeIf((p) -> p.getBottomCard().equals(pair.getBottomCard()));
             table.getThrownCard().add(pair);
+            if (table.getDeck().getCards().isEmpty() && curHand.getCards().isEmpty()) {
+                idToState.replace(playerId, PlayerState.STATE_INVALID);
+                synchronized (iPlayers) {
+                    iPlayers.notify();
+                }
+            }
             for (var player : playerIdToIPlayer.values()) {
                 if (!player.equals(curPlayer)) {
                     if (idToState.get(IPlayerToPlayerId.get(player)) != PlayerState.STATE_INVALID)
@@ -383,7 +389,7 @@ public class Game implements IGame, ServerGame {
             }
 
             var  cardsOnTable = table.getThrownCard();
-            if (giveUp || timeOut) {
+            if (giveUp || (timeOut && table.getThrownCard().stream().filter(pair -> pair.isOpen()).count() != 0)) {
                 IPlayer iPlayer  = iPlayers.get(getMovingPlayerIdx(1));
                 Player  player   = players.get(getMovingPlayerIdx(1));
                 int     playerId = IPlayerToPlayerId.get(iPlayer);
@@ -434,7 +440,7 @@ public class Game implements IGame, ServerGame {
                     iPlayer.onGameFinished(loserId);
                 }
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(60000);
                 }
                 catch (InterruptedException e) {
                     e.printStackTrace();
@@ -512,6 +518,8 @@ public class Game implements IGame, ServerGame {
         return -1;
     }
 
+    private int timerChecksum = 0;
+
     private void setTimeOut(int millisecondsTimeOut) {
         synchronized (timer) {
             System.out.println("setTimeOut " + millisecondsTimeOut);
@@ -524,10 +532,14 @@ public class Game implements IGame, ServerGame {
             }
             timeOut = false;
             Timer timer = new Timer(true);
+            ++timerChecksum;
+            int currentTimerChecksum = timerChecksum;
             timer.schedule(new TimerTask() {
                                @Override
                                public void run() {
                                    synchronized (iPlayers) {
+                                       if (currentTimerChecksum != timerChecksum)
+                                           return;
                                        timeOut = true;
                                        iPlayers.notify();
                                    }

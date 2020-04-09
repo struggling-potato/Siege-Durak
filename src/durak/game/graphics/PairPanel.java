@@ -1,5 +1,6 @@
 package durak.game.graphics;
 
+import durak.client.IController;
 import durak.game.Card;
 import durak.game.Pair;
 import durak.game.graphics.utils.CardToImage;
@@ -7,15 +8,25 @@ import durak.game.graphics.utils.CardToImage;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class PairPanel extends JPanel {
 	private Image botImage, topImage;
+	private IController controller;
+	private int pairIdx;
+	private MouseAdapter onClicked = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			controller.onTableClicked(pairIdx);
+		}
+	};
 
 	PairPanel() { }
 
-	PairPanel(Pair pair) {
+	PairPanel(Pair pair, IController controller, int pairIdx) {
 		ClassLoader classLoader = getClass().getClassLoader();
 		ArrayList<Card> cards = pair.getCards();
 		String botUrl = CardToImage.getCartImageUrl(cards.get(0));
@@ -30,6 +41,10 @@ public class PairPanel extends JPanel {
 			ex.printStackTrace();
 			System.err.println(botUrl);
 		}
+
+		this.controller = controller;
+		this.pairIdx = pairIdx;
+		this.addMouseListener(onClicked);
 	}
 
 	@Override

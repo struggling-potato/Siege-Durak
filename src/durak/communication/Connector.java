@@ -51,7 +51,7 @@ public class Connector {
 					if (providerQueue.isEmpty()) {
 						try {
 							while (0 != retries && providerQueue.isEmpty()) {
-								providerQueue.wait(100);
+								providerQueue.wait(5);
 								retries--;
 							}
 						}

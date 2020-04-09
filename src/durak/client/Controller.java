@@ -33,14 +33,16 @@ public class Controller implements IPlayer, IController {
 		currentPlayerState = PlayerState.STATE_MOVE;
 		view.drawStringState("Ваш ход");
 		view.setCardsState(true);
-		view.setButtonState(Buttons.BUTTON_PASS, true);
+//		view.setButtonState(Buttons.BUTTON_PASS, true);
 	}
 
 	@Override
 	public void defendYourself() {
+		System.out.println(player.getId() + " defendYourself");
 		currentPlayerState = PlayerState.STATE_DEFEND;
 		view.drawStringState("Отбивайтесь");
 		view.setCardsState(true);
+		view.setButtonState(Buttons.BUTTON_GIVEUP, true);
 	}
 
 	@Override
@@ -48,6 +50,7 @@ public class Controller implements IPlayer, IController {
 		currentPlayerState = PlayerState.STATE_TOSS;
 		view.drawStringState("Подкидывайте");
 		view.setCardsState(true);
+		view.setButtonState(Buttons.BUTTON_PASS, true);
 	}
 
 	@Override
@@ -67,6 +70,7 @@ public class Controller implements IPlayer, IController {
 		currentPlayerState = PlayerState.STATE_WAIT;
 		view.setCardsState(false);
 		view.drawStringState("Ожидание хода");
+		view.setButtonState(Buttons.BUTTON_PASS, false);
 
 	}
 
@@ -134,15 +138,16 @@ public class Controller implements IPlayer, IController {
 
 	@Override
 	public void onCardClicked(int cardIdx) {
+		System.out.println(player.getId() + " onCardClicked " + cardIdx + " " + currentPlayerState);
 		if (currentPlayerState == PlayerState.STATE_MOVE) {
 			game.throwCard(player.getId(), player.getCard(cardIdx));
 			view.drawStringState("Ожидание противника");
 		}
-		if (currentPlayerState == PlayerState.STATE_DEFEND) {
+		else if (currentPlayerState == PlayerState.STATE_DEFEND) {
 			chosenCard = new Card(player.getCard(cardIdx));
 			view.setCardsState(false);
 		}
-		if (currentPlayerState == PlayerState.STATE_TOSS) {
+		else if (currentPlayerState == PlayerState.STATE_TOSS) {
 			game.tossCard(player.getId(), player.getCard(cardIdx));
 			view.drawStringState("Ожидание противника");
 		}
@@ -158,7 +163,7 @@ public class Controller implements IPlayer, IController {
 			game.throwCards(player.getId(), cards);
 			view.drawStringState("Ожидание противника");
 		}
-		if (currentPlayerState == PlayerState.STATE_TOSS) {
+		else if (currentPlayerState == PlayerState.STATE_TOSS) {
 			List<Card> cards=new ArrayList<>();
 			for (Integer cardIdx: cardsIdx){
 				cards.add(player.getCard(cardIdx));

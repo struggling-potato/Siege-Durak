@@ -1,5 +1,7 @@
 package durak.game.graphics;
 
+import durak.client.IController;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +16,8 @@ public class CardPanel extends JPanel {
 	private boolean selected;
 	private boolean state;
 	private CardPanelMouseAdapter adapter = new CardPanelMouseAdapter();
+	private IController controller;
+	private int cardIdx;
 
 	CardPanel() {
 		selected = false;
@@ -32,11 +36,27 @@ public class CardPanel extends JPanel {
 		addMouseListener(adapter);
 	}
 
+	CardPanel(String url, IController controller, int cardIdx) {
+		this.controller=controller;
+		this.cardIdx=cardIdx;
+		selected = false;
+		state = true;
+		try {
+			cardImage = ImageIO.read(classLoader.getResourceAsStream(url));
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		addMouseListener(adapter);
+	}
+
 	private class CardPanelMouseAdapter extends MouseAdapter {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (!state) return;
-			selected = !selected;
+			if (e.getButton()==MouseEvent.BUTTON1) {
+				controller.onCardClicked(cardIdx);
+			}
+			//selected = !selected;
 			repaint();
 		}
 	}
