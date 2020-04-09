@@ -20,14 +20,14 @@ public class Client {
         Connector connector = new Connector();
         IGame     game      = connector.connectToServer(new ServerInfo("localhost", 1488)).get();
 
-        Bot player1 = new Bot();
-        player1.register(game);
-//        Bot player2 = new Bot();
-//        player2.register(game);
 //
 //        Thread.sleep(100000);
 
         Controller controller = new Controller(game);
+        Bot player1 = new Bot();
+        player1.register(game);
+        Bot player2 = new Bot();
+        player2.register(game);
 //        ClientView clientView = ((ClientView) controller.getView());
 //	    clientView.setTrump(new Card(Suit.SUIT_HEARTS, Rank.RANK_6));
 //	    clientView.drawStringState("Новый стейт");
