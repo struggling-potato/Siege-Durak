@@ -91,21 +91,23 @@ public class Bot implements IPlayer {
 			findCardWithNoAnswer().ifPresent((card) -> {
 				System.out.println(card);
 				game.throwCard(id, card);
+				hand.getCards().remove(card);
+				return;
 			});
 		}
+		ArrayList<Card> someCards = findMinPair();
+		if (someCards.size() < 2) {
+			Card card = findMin();
+			System.out.println(card);
+			game.throwCard(id, card);
+			hand.getCards().remove(card);
+		}
 		else {
-			ArrayList<Card> someCards = findMinPair();
-			if (someCards.size() < 2) {
-				Card card = findMin();
+			for (Card card : someCards) {
 				System.out.println(card);
-				game.throwCard(id, card);
+				hand.getCards().remove(card);
 			}
-			else {
-				for (Card card : someCards) {
-					System.out.println(card);
-				}
-				game.throwCards(id, someCards);
-			}
+			game.throwCards(id, someCards);
 		}
 	}
 
@@ -191,12 +193,12 @@ public class Bot implements IPlayer {
 			for (Pair pair : table.getThrownCard()) {
 				if (pair.isOpen()) {
 					var opt = findMinAnswer(pair.getBottomCard(), hand);
-						opt.ifPresent((card) -> {
-							Pair beatPair = new Pair(pair.getBottomCard(), card);
-							System.out.println(beatPair);
-							game.beatCard(id, beatPair);
-							hand.getCards().remove(opt.get());
-						});
+					opt.ifPresent((card) -> {
+						Pair beatPair = new Pair(pair.getBottomCard(), card);
+						System.out.println(beatPair);
+						game.beatCard(id, beatPair);
+						hand.getCards().remove(opt.get());
+					});
 				}
 			}
 		}
