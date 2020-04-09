@@ -82,8 +82,9 @@ public class ClientView extends JFrame implements IView {
 
 		pairsPanel.removeAll();
 
-		for(Pair pair: table.getThrownCard()) {
-			PairPanel pairPanel = new PairPanel(pair);
+		for(int i = 0; i < table.getThrownCard().size(); ++i) {
+			Pair pair = table.getThrownCard().get(i);
+			PairPanel pairPanel = new PairPanel(pair, controller, i);
 			pairPanel.setMinimumSize(new Dimension(172, 330));
 			pairPanel.setPreferredSize(new Dimension(172, 330));
 			pairPanel.setOpaque(false);
@@ -114,7 +115,7 @@ public class ClientView extends JFrame implements IView {
 		for (int i = 0; i < cards.size(); i++) {
 			url = CardToImage.getCartImageUrl(cards.get(i));
 
-			CardPanel cardPanel = new CardPanel(url);
+			CardPanel cardPanel = new CardPanel(url, controller, i);
 			cardPanel.setMinimumSize(new Dimension(172, 270));
 			cardPanel.setPreferredSize(new Dimension(172, 270));
 			cardPanel.setOpaque(false);
@@ -142,6 +143,9 @@ public class ClientView extends JFrame implements IView {
 		enemyPlayer1Panel.removeAll();
 		enemyPlayer2Panel.removeAll();
 
+		enemyPlayer1Panel.setMaximumSize(new Dimension(300, 200));
+		enemyPlayer2Panel.setMaximumSize(new Dimension(300, 200));
+
 		if (player1 != null) {
 			for (int i = 0; i < player1.getHandSize(); i++) {
 				CardPanel cardPanel = new CardPanel(url);
@@ -151,6 +155,7 @@ public class ClientView extends JFrame implements IView {
 				cardPanel.setPreferredSize(new Dimension(172, 260));
 				cardPanel.setOpaque(false);
 				enemyPlayer1Panel.add(cardPanel);
+//				enemyPlayer1Panel.(new ComponentOrientation());
 				enemyPlayer1Panel.revalidate();
 				validate();
 			}
