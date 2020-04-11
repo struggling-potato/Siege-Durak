@@ -230,7 +230,7 @@ public class Connector {
 
 	public void registerServer(IGame server, int port) throws IOException, InterruptedException {
 		System.out.println("Registering server on port " + port + "...");
-		InetSocketAddress   serverAddress       = new InetSocketAddress("localhost", port);
+		InetSocketAddress   serverAddress       = new InetSocketAddress(port);
 		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 		synchronized (providerSelector) {
 			serverAddresses.add(serverAddress);
@@ -249,7 +249,7 @@ public class Connector {
 		DatagramChannel datagramChannel = DatagramChannel.open();
 		datagramChannel.configureBlocking(false);
 		datagramChannel.socket().setReuseAddress(true);
-		datagramChannel.bind(new InetSocketAddress("localhost", scannerPort));
+		datagramChannel.bind(new InetSocketAddress(scannerPort));
 
 		synchronized (providerSelector) {
 			datagramChannel.register(providerSelector, SelectionKey.OP_READ);
@@ -506,7 +506,10 @@ public class Connector {
 
 	private void loadBytesIntoBuffer(ByteChannel channel, ByteBuffer buffer, int count) throws IOException {
 		setBufferOffset(buffer, count);
-		channel.read(buffer);
+		int left = count;
+		while (left != 0) {
+			left -= channel.read(buffer);
+		}
 		setBufferOffset(buffer, count);
 	}
 
